@@ -1,0 +1,88 @@
+<!DOCTYPE html><html><head><meta charset=utf-8><title>尚门理车</title><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><meta name=format-detection content="telephone=no"><link rel=stylesheet href=../static/css/reset.css><script type=text/javascript src="http://api.map.baidu.com/api?v=2.0&ak=X3KQeIPEZ1s8e50o9sQbssnqg8whsn5l"></script><script type=text/javascript src=http://res.wx.qq.com/open/js/jweixin-1.0.0.js></script><style>html,body{
+            background: #f5f5f5!important
+        }
+        #bkcsy{
+            display: none
+        }
+        #pageDialog{
+            z-index:10086
+        }
+        #pageDialog .Prompt{
+            background: rgb(0,0,0);
+            text-align: center;
+            color:#fff;
+            padding: 10px 0;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index:10086
+        }
+        .swiper-container-horizontal>.swiper-pagination-bullets .swiper-pagination-bullet{
+            width:12px;
+            height:12px;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .swiper-pagination-bullet-active {
+            background-color: #c7a770!important
+        }
+        .swiper-pagination{
+            bottom: 25px!important
+        }
+        .mint-indicator {
+            position: absolute;
+            z-index:100000
+        }
+        .mint-indicator-mask{
+            /*display: none!important*/
+        }
+        .mint-msgbox input{
+            height:42px!important;
+        }</style><link href=/static/css/app.b72ded806a9780e5e010a7a78241480e.css rel=stylesheet></head><body><div id=app></div><script src=../static/js/fastclick.js charset=utf-8></script><script src=../static/js/json2.min.js charset=utf-8></script><script src=../static/js/bundle.js charset=utf-8></script><script type=text/javascript src=//cdn.bootcss.com/jquery/3.1.1/jquery.min.js charset=utf-8></script><script src=../static/js/pageDialog.js charset=utf-8></script><script type=text/javascript>var ALL_WEB_PATH = "http://m.smliche.com/"
+        window.onload = function () {
+            FastClick.attach(document.body)
+            var geolocation = new BMap.Geolocation();
+            var geoc = new BMap.Geocoder();
+        	geolocation.getCurrentPosition(function(r){
+        		if(this.getStatus() == BMAP_STATUS_SUCCESS){
+        			var mk = new BMap.Marker(r.point);
+                    window.sessionStorage.lng = r.point.lng;
+                    window.sessionStorage.lat = r.point.lat;
+        		} else {
+        		}
+        	}, {enableHighAccuracy: true})
+            window.geoc = geoc
+            window.translation = function (pt) {
+                var point = new BMap.Point(pt.lat, pt.lng);
+                geoc.getLocation(point, function(rs){
+        			var addComp = rs.addressComponents;
+                    window.addComp = addComp
+        		});
+            }
+
+        }
+        // var timeRoll = setInterval(function () {
+        //     if (window.localStorage.userToken) {
+                // clearInterval(timeRoll)
+                // alert(window.localStorage.userToken)
+        // var _url = encodeURIComponent('http://smlc.wzyichu.com/index.html')
+        // $.ajax({
+		// 	type:"get",
+		// 	url:ALL_WEB_PATH + "/api/WxPay/GetWxPayConfig?url=" + _url,
+		// 	beforeSend:function(xhr){
+		// 		xhr.setRequestHeader("Authorization",'Bearer ' + window.localStorage.userToken);
+		// 	},
+		// 	success:function(data){
+        //         console.log(data)
+        //         var params = JSON.parse(data.data)
+        //         console.log(params)
+        //         wx.config({
+        //             debug: true,
+        //             appId: params.appId,
+        //             timestamp: params.timestamp,
+        //             nonceStr: params.noncestr,
+        //             signature: params.signature,
+        //             jsApiList: ['onMenuShareTimeline','onMenuShareAppMessage','chooseWXPay']
+        //         });
+		// 	}
+        // });
+        //     }
+        // },1000)</script><script type=text/javascript src=/static/js/manifest.7edd7ea23edf0d571799.js></script><script type=text/javascript src=/static/js/vendor.73d6b57b0054e5173987.js></script><script type=text/javascript src=/static/js/app.91770147f31db40ad580.js></script></body></html>
