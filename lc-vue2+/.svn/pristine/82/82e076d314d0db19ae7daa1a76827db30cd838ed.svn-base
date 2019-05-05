@@ -1,0 +1,167 @@
+<template lang="html">
+    <div id="payment" >
+        <header-common :title="viewTitle" :iconType="iconType" :rightParams="rightParams"></header-common>
+        <div class="paymentWrap">
+            <div class="itemWrap">
+                <div class="ttl">门店服务</div>
+                <p class="storeName">自由行汽车快修（球山）</p>
+                <p class="group iconfont icon-chevron-copy-copy-copy-copy-copy-copy">
+                    <span class="item">定期小保养、刹车片深化养护</span><span>共4件配件、2项服务</span>
+                </p>
+                <p class="cost">支付金额：<em>￥65</em></p>
+            </div>
+            <div class="itemWrap">
+                <div class="ttl">上门服务</div>
+                <p class="group iconfont icon-chevron-copy-copy-copy-copy-copy-copy">
+                    <span class="item">定期小保养、刹车片深化养护</span><span>共4件配件、2项服务</span>
+                </p>
+                <p class="cost">支付金额：<em>￥65</em></p>
+            </div>
+            <div class="balance">可用账户余额<em>￥0</em><mt-switch v-model="insuranceValue"></mt-switch></div>
+            <div class="itemWrap payList">
+                <div class="ttl">支付方式</div>
+                <div class="payType weixin"><span class="payIcon"><img src="../assets/images/icon_zhifubao.png" alt=""></span><span class="payName">支付宝</span><span class="iconfont icon-39 icon-xuanze"></span></div>
+                <div class="payType weixin"><span class="payIcon"><img src="../assets/images/icon_weixin.png" alt=""></span><span class="payName">微信</span><span class="iconfont icon-39"></span></div>
+                <div class="payType weixin"><span class="payIcon"><img src="../assets/images/icon_yinlian.png" alt=""></span><span class="payName">银联</span><span class="iconfont icon-39"></span></div>
+            </div>
+            <div class="btnWrap">
+                <button>确认支付</button>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script  type="text/ecmascript-6">
+import headerCommon from 'components/header/headerCommon.vue'
+import { Switch } from 'mint-ui'
+
+export default {
+    data () {
+        return {
+            viewTitle: '在线支付',
+            iconType: 'icon-fanhui',
+            rightParams: {},
+            insuranceValue: true
+        }
+    },
+    components: {
+        'header-common': headerCommon,
+        'mt-switch': Switch
+    },
+    created () {
+    },
+    methods: {
+    },
+    beforeCreate () {
+        this.$store.commit('hideFoot')
+    }
+}
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus">
+#payment
+    .paymentWrap
+        padding-top:45px
+        padding-bottom:74px
+        .itemWrap
+            .ttl
+                line-height:40px
+                padding-left:10px
+            p
+                background-color:#fff
+                padding-left:10px
+                border-bottom:1px solid #ddd
+            .storeName
+                height:50px
+                line-height:50px
+            .group
+                height:55px
+                line-height:55px
+                position:relative
+                span
+                    display:block
+                    overflow:hidden
+                    white-space:nowrap
+                    overflow:hidden
+                    text-overflow:ellipsis
+                    height:20px
+                    line-height:20px
+                    font-size:14px
+                    color:#999
+                .item
+                    font-size:16px
+                    line-height:28px
+                    height:28px
+                    color:#333
+                &:before
+                    position:absolute
+                    right:2px
+            .cost
+                color:#999
+                font-size:16px
+                line-height:50px
+                border-bottom:1px solid #ddd
+                em
+                    font-size:20px
+                    color:#c7a770
+                    font-style:normal
+                    font-family:'微软雅黑'
+            .payType
+                line-height:50px
+                position:relative
+                margin-left:40px
+                border-bottom:1px solid #ddd
+                &:last-child
+                    border-bottom:none
+                .payIcon
+                    position:absolute
+                    padding:0 12px
+                    left:-45px
+                    img
+                        width:30px
+                        height:30px
+                        vertical-align:middle
+                .iconfont
+                    font-size:24px
+                    color:#999
+                    float:right
+                    margin-right:10px
+                .icon-xuanze
+                    color:#c7a770
+        .balance
+            margin-top:10px
+            background-color:#fff
+            line-height:50px
+            padding-left:12px
+            .mint-switch
+                float:right
+                margin:9px 10px 0 0
+                .mint-switch-core
+                    border-color:#c7a770
+                    background-color:#c7a770
+            em
+                margin-left:15px
+                color:#c7a770
+                font-style:normal
+                font-family:'微软雅黑'
+        .payList
+            border-bottom:1px solid #ddd
+            background-color:#fff        
+
+        .btnWrap
+            position: fixed
+            bottom: 0
+            width: 100%
+            background-color: #fff
+            z-index: 2
+            button
+                width: 94%
+                margin: 20px 3% 10px 3%
+                background-color: #c7a770
+                height: 44px
+                line-height: 44px
+                color: #fff
+                border: none
+                font-size: 18px
+
+</style>

@@ -1,0 +1,27 @@
+import index from './views/index.vue'
+import cart from './views/cart.vue'
+import order from './views/order.vue'
+import user from './views/user.vue'
+
+const routes = [
+    {
+        path: '/index',
+        component: index
+    }, {
+        path: '/',
+        component: index
+    }, {
+        path: '/cart',
+        component: cart
+    }, {
+        path: '/order',
+        component: order
+    }, {
+        path: '/user',
+        component: user
+    }
+]
+
+export default {
+    routes
+}

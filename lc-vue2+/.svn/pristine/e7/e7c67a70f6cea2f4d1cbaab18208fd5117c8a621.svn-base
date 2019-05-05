@@ -1,0 +1,311 @@
+<template lang="html">
+    <!--  优惠券 -->
+    <div id="discount">
+        <header-common :title="viewTitle" :iconType="iconType" :rightParams="rightParams"></header-common>
+        <div id="discountWrap">
+            <mt-navbar  v-model="selected">
+                <mt-tab-item id="1">可用券</mt-tab-item>
+                <mt-tab-item id="2">已用/过期</mt-tab-item>
+            </mt-navbar>
+
+            <mt-tab-container :swipeable="swipeable"  v-model="selected">
+                <mt-tab-container-item id="1">
+                    <div class="list" ref="slideBar1">
+                        <div class="slideBar">
+                            <div class="item">
+                                <div class="left">￥<span>450</span></div>
+                                <div class="center"></div>
+                                <div class="right">
+                                    <h4>抵用券</h4>
+                                    <p>1、满100时可用</p>
+                                    <p>2、有效期至2017.01.01</p>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="left">￥<span>450</span></div>
+                                <div class="center"></div>
+                                <div class="right">
+                                    <h4>抵用券</h4>
+                                    <p>1、满100时可用</p>
+                                    <p>2、有效期至2017.01.01</p>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="left">￥<span>450</span></div>
+                                <div class="center"></div>
+                                <div class="right">
+                                    <h4>抵用券</h4>
+                                    <p>1、满100时可用</p>
+                                    <p>2、有效期至2017.01.01</p>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="left">￥<span>450</span></div>
+                                <div class="center"></div>
+                                <div class="right">
+                                    <h4>抵用券</h4>
+                                    <p>1、满100时可用</p>
+                                    <p>2、有效期至2017.01.01</p>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="left">￥<span>450</span></div>
+                                <div class="center"></div>
+                                <div class="right">
+                                    <h4>抵用券</h4>
+                                    <p>1、满100时可用</p>
+                                    <p>2、有效期至2017.01.01</p>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="left">￥<span>450</span></div>
+                                <div class="center"></div>
+                                <div class="right">
+                                    <h4>抵用券</h4>
+                                    <p>1、满100时可用</p>
+                                    <p>2、有效期至2017.01.01</p>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="left">￥<span>450</span></div>
+                                <div class="center"></div>
+                                <div class="right">
+                                    <h4>抵用券</h4>
+                                    <p>1、满100时可用</p>
+                                    <p>2、有效期至2017.01.01</p>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="left">￥<span>450</span></div>
+                                <div class="center"></div>
+                                <div class="right">
+                                    <h4>抵用券</h4>
+                                    <p>1、满100时可用</p>
+                                    <p>2、有效期至2017.01.01</p>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="left">￥<span>450</span></div>
+                                <div class="center"></div>
+                                <div class="right">
+                                    <h4>抵用券</h4>
+                                    <p>1、满100时可用</p>
+                                    <p>2、有效期至2017.01.01</p>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="left">￥<span>450</span></div>
+                                <div class="center"></div>
+                                <div class="right">
+                                    <h4>抵用券</h4>
+                                    <p>1、满100时可用</p>
+                                    <p>2、有效期至2017.01.01</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </mt-tab-container-item>
+                <mt-tab-container-item id="2" class="dated">
+                    <div class="list">
+                        <div class="slideBar" ref="slideBar2">
+                            <div class="item">
+                                <div class="left">￥<span>450</span></div>
+                                <div class="center"></div>
+                                <div class="right">
+                                    <h4>抵用券</h4>
+                                    <p>1、满100时可用</p>
+                                    <p>2、有效期至2017.01.01</p>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="left">￥<span>450</span></div>
+                                <div class="center"></div>
+                                <div class="right">
+                                    <h4>抵用券</h4>
+                                    <p>1、满100时可用</p>
+                                    <p>2、有效期至2017.01.01</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </mt-tab-container-item>
+            </mt-tab-container>
+        </div>
+    </div>
+
+</template>
+
+<script>
+import headerCommon from '../../components/header/headerCommon.vue'
+// import ports from './../../port.js'
+import ajax from './../../vueResource.ajax.js'
+import Bscroll from 'better-scroll'
+import { Navbar, TabItem, TabContainer, TabContainerItem, Toast } from 'mint-ui'
+
+export default {
+    data () {
+        return {
+            viewTitle: '优惠券',
+            iconType: 'icon-fanhui',
+            rightParams: {
+                path: '/user/direction',
+                desc: '使用说明'
+            },
+            swipeable: true,
+            selected: '1',
+            // 可用数据
+            ableData: [],
+            // 不可用数据
+            unAbleData: []
+        }
+    },
+    components: {
+        'header-common': headerCommon,
+        'mt-navbar': Navbar,
+        'mt-tab-item': TabItem,
+        'mt-tab-container': TabContainer,
+        'mt-tab-container-item': TabContainerItem
+    },
+    beforeCreate () {
+        this.$store.commit('hideFoot')
+    },
+    created () {
+        this.getDiscount(true)
+        this.$nextTick(function () {
+            this._initScroll()
+        })
+    },
+    methods: {
+        loadMore () {},
+        _initScroll () {
+            this.viewScroll1 = new Bscroll(this.$refs.slideBar1, {
+                click: true,
+                scrollY: true
+            })
+            this.viewScroll2 = new Bscroll(this.$refs.slideBar2, {
+                click: true,
+                scrollY: true
+            })
+        },
+        getDiscount (val) {
+            var page = 1
+            var params = '?dto.isUseable=' + val + '&dto.page=' + page + '&dto.pageSize=10'
+            ajax.ajax({
+                'vue': this,
+                'port': 'GetCurrentCoupons',
+                'type': 'get',
+                'req_params': params,
+                'statusOk': function (res, v) {
+                    console.log(res.data)
+                    if (val) {
+                        v.ableData = res.data.data
+                    } else {
+                        v.unAbleData = res.data.data
+                    }
+                    setTimeout(function () {
+                        v.viewScroll1.refresh()
+                        v.viewScroll2.refresh()
+                    }, 300)
+                },
+                'statusError': function (res, v) {
+                    Toast('获取折扣券失败')
+                }
+            })
+        }
+    },
+    watch: {
+        selected (cur, old) {
+            console.log(cur)
+            if (cur === 1) {
+                this.getDiscount(true)
+            } else {
+                this.getDiscount(false)
+            }
+        }
+    }
+}
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus">
+#discount
+    #discountWrap
+        margin-top:45px
+        .mint-navbar
+            border-bottom:1px solid #ddd
+            .mint-tab-item-label
+                font-size:16px
+                color:#666
+        .mint-tab-item.is-selected
+            border-color:#c7a770
+            .mint-tab-item-label
+                color:#c7a770
+        .mint-tab-container
+            overflow:auto
+            position:static
+            .list
+                position:absolute
+                top:97px
+                bottom:10px
+                width:100%
+                overflow:hidden
+                .slideBar
+                    padding-top:10px
+                    .item
+                        margin:0 10px 10px 10px
+                        /*height:102px*/
+                        position:relative
+                        padding-left:117px
+                        div
+                            height:102px
+                        .left
+                            position:absolute
+                            left:0
+                            top:0
+                            background-color:#fff
+                            width:100px
+                            text-align:center
+                            line-height:100px
+                            border:1px solid #ddd
+                            border-right:none
+                            font-family:"微软雅黑"
+                            font-size:13px
+                            color:#c7a770
+                            span
+                                font-size:26px
+                        .center
+                            position:absolute
+                            left:101px
+                            top:0
+                            background:url("../../assets/images/bg_disc2.png") no-repeat
+                            background-size:17px 100px
+                            width:17px
+                        .right
+                            background-color:#fff
+                            border:1px solid #ddd
+                            border-left:none
+                            padding-left:15px
+                            h4
+                                margin-top:15px
+                                margin-bottom:8px
+                                font-size:20px
+                                color:#666
+                            p
+                                color:#999
+                                font-size:14px
+                                line-height:20px
+            .dated
+                .list
+                    .slideBar
+                        .item
+                            .left
+                                color:#ccc
+                                span
+                                    color:#ccc
+                            .right
+                                h4
+                                    color:#ccc
+                                p
+                                    color:#ccc
+
+
+</style>

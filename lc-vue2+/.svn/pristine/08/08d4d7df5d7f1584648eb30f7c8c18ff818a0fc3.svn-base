@@ -1,0 +1,361 @@
+<template>
+    <div class="index-wrap">
+        <headerIndex></headerIndex>
+        <!-- <div class="show-img" ref="showimg">
+            <ul class="imgs">
+                <li><img src="../assets/images/test1.png" /></li>
+                <li><img src="../assets/images/test1.png" /></li>
+            </ul>
+        </div> -->
+        <div class="swiper-container show-img"  ref="showimg">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide" v-if="HomeAdvers.length > 0" v-for="item in HomeAdvers">
+                    <router-link to="item.linkId"><img :src="item.displayPictureUrl" /></router-link>
+                </div>
+                <div class="swiper-slide" v-if="HomeAdvers.length === 0">
+                    <router-link to="item.linkId"><img src="../assets/images/default_homeImg.jpg" /></router-link>
+                </div>
+            </div>
+        </div>
+        <div class="curCarInfo" v-if="isLogin">
+            <div class="CarInfoWrap" @click="$router.push('/user/changeCurCar')">
+                <div class="carLogo">
+                    <img src="../assets/images/test_carlogo.png" >
+                </div>
+                <div class="carInfo iconfont icon-chevron-copy-copy-copy-copy-copy-copy">
+                    <div class="carID">{{defaultCar.displayLicensePlate}}</div>
+                    <div class="carDesc">{{defaultCar.carName}}</div>
+                </div>
+            </div>
+        </div>
+        <div class="nav-wrap">
+            <router-link to="/serve/index">保养</router-link>
+            <router-link to="/serve/fix">维修</router-link>
+            <router-link to="/serve/hairdressing">美容</router-link>
+            <router-link to="/insurance">车险</router-link>
+            <router-link to="/user/issure">常见问题</router-link>
+            <router-link to="/serve/tire">轮胎</router-link>
+            <router-link to="/serve/sprinkle">无痕钣喷</router-link>
+            <router-link to="/roadHelp">救援</router-link>
+            <router-link to="/setInspection">年检</router-link>
+            <router-link to="/user/balance">充值</router-link>
+        </div>
+        <div class="write-space"></div>
+        <div class="plan commonWrap" v-if="isLogin">
+            <div class="md-title">
+                保养计划表
+                <div class="title-right" @click="amendKM">
+                    当前公里数:<label>{{defaultCar?defaultCar.totalKm:''}}</label>
+                    <span class="title-right-icon"></span>
+                </div>
+            </div>
+            <div class="plan-wrap commonContent">
+                <ul>
+                    <li v-for="item in BYPlan"><img :src="item.serviceIconPictureUrl" />{{item.serviceProductName}}</li>
+                </ul>
+            </div>
+            <div class="plan-btn-wrap">
+                <div class="check" @click="$router.push('/plan')">查看保养手册</div>
+                <div class="cart-in">加入购物车</div>
+            </div>
+        </div>
+        <div class="write-space"></div>
+        <div class="violation commonWrap">
+            <div class="md-title">
+                违章查询
+            </div>
+            <div class="commonContent">
+                <p>新违章自动提醒  无忧车务从现在开始</p>
+                <div class="wz-search">
+                    <input type="text" name="car_num" value="" placeholder="填写车架号后六位" />
+                    <button class="wzcx iconfont icon-sousuo"></button>
+                </div>
+            </div>
+        </div>
+        <div class="write-space"></div>
+        <div class="recommend commonWrap">
+            <div class="md-title">
+                推荐
+            </div>
+            <div class="commonContent">
+                <div class="art-list" v-for="article in RecommendArticles" @click="onArticleDetail(article.articleId)">
+                    <img :src="article.pictureUrl" />
+                    <div class="info">
+                        <p class="tt">{{article.title}}</p>
+                        <p class="desc">{{article.short}}</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="addImgWrap">
+            <div class="swiper-container" ref="addimg">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide" v-for="item in AdverSpace1Advers">
+                        <router-link to="item.linkId"><img :src="item.displayPictureUrl" /></router-link>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="write-space"></div>
+        <div class="insurance commonWrap" v-if="isLogin">
+            <div class="md-title">
+                车险
+            </div>
+            <div class="commonContent">
+                车辆保险到期提醒
+                <mt-switch @change="change" v-model="defaultCar.isCarInsuranceNotify"></mt-switch>
+            </div>
+        </div>
+        <div class="write-space"></div>
+        <div class="insurance commonWrap" v-if="isLogin">
+            <div class="md-title">
+                年检
+            </div>
+            <div class="commonContent">
+                年检到期提醒
+                <mt-switch @change="change2" v-model="defaultCar.isAnnualInspectionNotify"></mt-switch>
+            </div>
+        </div>
+        <div class="write-space"></div>
+        <div class="write-space-50"></div>
+    </div>
+</template>
+
+<script type="text/ecmascript-6">
+    import headerIndex from '../components/header/headerIndex.vue'
+    import Bscroll from 'better-scroll'
+    import 'mint-ui/lib/style.min.css'
+    import { Switch, Toast, MessageBox } from 'mint-ui'
+    import Swiper from 'swiper'
+    import 'swiper/dist/css/swiper.min.css'
+    import ports from './../port.js'
+    import ajax from './../vueResource.ajax.js'
+
+    export default {
+        data () {
+            return {
+                // 保险配置
+                insuranceValue: false,
+                // 年检配置
+                examineValue: false,
+                // 轮播图
+                HomeAdvers: [],
+                AdverSpace1Advers: [],
+                // 推荐文章
+                RecommendArticles: [],
+                // 保养手册
+                BYPlan: [],
+                // 第一次监测数据变化
+                first1: 0,
+                first2: 1
+            }
+        },
+        components: {
+            headerIndex,
+            'mt-switch': Switch
+        },
+        beforeCreate () {
+            this.$store.commit('showFoot')
+            // 轮播图
+            var that = this
+            this.$http.get(ports.port.AppHomeAdvers).then((res) => {
+                if (res.data.success === true) {
+                    this.HomeAdvers = res.data.data
+                    setTimeout(function () {
+                        that._initScroll()
+                    }, 500)
+                } else {
+                    Toast('获取轮播图失败')
+                }
+            })
+            // 广告位
+            this.$http.get(ports.port.AppAdverSpace1Advers).then((res) => {
+                if (res.data.success === true) {
+                    this.AdverSpace1Advers = res.data.data
+                    setTimeout(function () {
+                        that._addImgScroll()
+                    }, 500)
+                } else {
+                    Toast('获取广告图失败')
+                }
+            })
+            // 获取推荐文章列表
+            var articleParams = '?pageIndex=1&' + 'pageSize=2'
+            this.$http.get(ports.port.GetRecommendArticles + articleParams).then((res) => {
+                if (res.data.success === true) {
+                    this.RecommendArticles = res.data.data
+                } else {
+                    Toast('获取推荐文章失败')
+                }
+            })
+        },
+        created () {
+            if (window.localStorage.userToken) {
+                this.getDefaultCarInfo()
+            }
+        },
+        computed: {
+            defaultCar () {
+                return this.$store.state.user.userDefaultCar
+            },
+            isLogin () {
+                return window.localStorage.userToken
+            },
+            insuranceValue () {
+                if (this.defaultCar) {
+                    return this.defaultCar.isCarInsuranceNotify
+                }
+            },
+            examineValue () {
+                if (this.defaultCar) {
+                    return this.defaultCar.isAnnualInspectionNotify
+                }
+            }
+        },
+        watch: {
+            defaultCar () {
+                this.getBYData()
+            }
+        },
+        methods: {
+            change () {
+                if (this.insuranceValue === false) {
+                    this.$router.push('/setInsurance')
+                } else {
+                    var params = {
+                        id: this.$store.state.user.userDefaultCar.id,
+                        isCarInsuranceNotify: false
+                    }
+                    ajax.ajax({
+                        'vue': this,
+                        'port': 'UpdateCarInsurance',
+                        'type': 'post',
+                        'req_params': params,
+                        'statusOk': function (res, v) {
+                            if (res.data.success === true) {
+                                Toast('您已关闭车险到期提醒')
+                            }
+                        },
+                        'statusError': function (res, v) {
+                        }
+                    })
+                }
+            },
+            change2 () {
+                if (this.examineValue === false) {
+                    this.$router.push('/setInspection')
+                } else {
+                    var params = {
+                        id: this.$store.state.user.userDefaultCar.id,
+                        isAnnualInspectionNotify: false
+                    }
+                    ajax.ajax({
+                        'vue': this,
+                        'port': 'UpdateAnnualInspection',
+                        'type': 'post',
+                        'req_params': params,
+                        'statusOk': function (res, v) {
+                            if (res.data.success === true) {
+                                Toast('您已关闭年检到期提醒')
+                            }
+                        },
+                        'statusError': function (res, v) {
+                        }
+                    })
+                }
+            },
+            _initScroll () {
+                this.viewScroll = new Swiper(this.$refs.showimg, {
+                    direction: 'horizontal'
+                })
+            },
+            _addImgScroll () {
+                this.viewScroll = new Swiper(this.$refs.addimg, {
+                    direction: 'horizontal'
+                })
+            },
+            gotoCarlist () {
+                this.$router.push('/user/carList')
+            },
+            amendKM () {
+                // 修改里程
+                MessageBox.prompt('请输入总里程数', '').then(({ value, action }) => {
+                    console.log(value)
+                    var params = {
+                        id: this.defaultCar.id,
+                        totalKm: value
+                    }
+                    ajax.ajax({
+                        'vue': this,
+                        'port': 'UpdateTotalKm',
+                        'type': 'post',
+                        'req_params': params,
+                        'statusOk': function (res, v) {
+                            v.$store.state.user.userDefaultCar.totalKm = value
+                            Toast('修改成功')
+                        },
+                        'statusError': function (res, v) {
+                            Toast('操作失败，请稍后重试')
+                        }
+                    })
+                })
+            },
+            // 获取默认车辆数据
+            getDefaultCarInfo () {
+                if (!this.$store.state.user.curCarNum) {
+                    ajax.ajax({
+                        'vue': this,
+                        'port': 'GetDefaultCustomerCar',
+                        'type': 'get',
+                        'statusOk': function (res, v) {
+                            v.$store.state.user.userDefaultCar = res.data.data
+                            v.$store.state.user.curCarNum = v.$store.state.user.userDefaultCar.displayLicensePlate
+                        },
+                        'statusError': function (res, v) {
+                            Toast('获取用户信息失败')
+                        }
+                    })
+                } else {
+                    var listData = this.$store.state.user.userCarList
+                    var curCarID = this.$store.state.user.curCarID
+                    for (var i = 0; i < listData.length; i++) {
+                        if (listData[i].id === curCarID) {
+                            this.$store.state.user.userDefaultCar = listData[i]
+                        }
+                    }
+                }
+            },
+            onArticleDetail (id) {
+                // 跳转到文章详情
+                this.$router.push('/article/' + id)
+            },
+            // 获取保养数据
+            getBYData () {
+                ajax.ajax({
+                    'vue': this,
+                    'port': 'GetMaintenanceTips',
+                    'type': 'get',
+                    'statusOk': function (res, v) {
+                        var tmpdata = res.data.data
+                        var totalKM = v.defaultCar.totalKm
+                        for (var i = 0; i < tmpdata.length; i++) {
+                            if (tmpdata[i].startKilometers < totalKM && tmpdata[i].endKilometers > totalKM) {
+                                if (tmpdata[i].serviceProducts) {
+                                    v.BYPlan = tmpdata[i].serviceProducts
+                                }
+                            }
+                        }
+                    },
+                    'statusError': function (res, v) {
+                        Toast('保养手册不存在')
+                    }
+                })
+            }
+        }
+    }
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus">
+    @import "../assets/css/index.styl"
+</style>

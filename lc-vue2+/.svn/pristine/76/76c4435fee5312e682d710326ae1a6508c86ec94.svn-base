@@ -1,0 +1,35 @@
+<template lang="html">
+    <!--  优惠券 -->
+    <div id="discount">
+        <header-common :title="viewTitle" :iconType="iconType" :rightParams="rightParams"></header-common>
+        <div id="discountWrap">
+
+        </div>
+    </div>
+
+</template>
+
+<script>
+import headerCommon from '../../components/header/headerCommon.vue'
+export default {
+    data () {
+        return {
+            viewTitle: '优惠券',
+            iconType: 'icon-fanhui',
+            rightParams: {}
+        }
+    },
+    components: {
+        'header-common': headerCommon
+    },
+    beforeCreate () {
+        this.$store.commit('hideFoot')
+    }
+    // beforeDestroy () {
+    //     this.$store.commit('showFoot')
+    // }
+}
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus">
+</style>

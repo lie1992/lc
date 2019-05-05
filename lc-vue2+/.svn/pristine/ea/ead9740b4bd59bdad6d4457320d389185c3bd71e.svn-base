@@ -1,0 +1,259 @@
+<template lang="html">
+    <!-- 道路救援 -->
+    <div id="roadHelp">
+        <header-common :title="viewTitle" :iconType="iconType" :rightParams="rightParams"></header-common>
+        <div class="roadHelpWrap">
+            <mt-navbar  v-model="selected">
+                <mt-tab-item id="1">免费</mt-tab-item>
+                <mt-tab-item id="2">付费</mt-tab-item>
+            </mt-navbar>
+
+            <mt-tab-container :swipeable="swipeable"  v-model="selected">
+                <mt-tab-container-item id="1">
+                    <div class="list">
+                        <div class="slideBar" refs="slideBar1">
+                            <div class="item" v-for="item in ableData">
+                                <div class="top">
+                                    <img :src="item.pictureUrl" alt="">
+                                    <p><span>{{item.name}}</span><span>{{'('+item.workingTime+')'}}</span></p>
+                                </div>
+                                <div class="bottom">
+                                    <ul>
+                                        <li v-for="con in item.contents"><span class="iconfont icon-duigouzhuanhuan"></span>{{con}}</li>
+                                    </ul>
+                                </div>
+                                <button class="call"><span class="iconfont icon-dianhua"></span>{{item.phone}}</button>
+                            </div>
+                        </div>
+                    </div>
+                </mt-tab-container-item>
+                <mt-tab-container-item id="2">
+                    <div class="list">
+                        <div class="slideBar">
+                            <div class="item" v-for="item in unAbleData">
+                                <div class="top">
+                                    <img :src="item.pictureUrl" alt="">
+                                    <p><span>{{item.name}}</span><span>{{'('+item.workingTime+')'}}</span></p>
+                                </div>
+                                <div class="bottom">
+                                    <ul>
+                                        <li v-for="con in item.contents"><span class="iconfont icon-duigouzhuanhuan"></span>{{con}}</li>
+                                    </ul>
+                                </div>
+                                <button class="call"><span class="iconfont icon-dianhua"></span>{{item.phone}}</button>
+                            </div>
+                        </div>
+                    </div>
+                </mt-tab-container-item>
+            </mt-tab-container>
+        </div>
+    </div>
+</template>
+
+<script>
+import headerCommon from '../components/header/headerCommon.vue'
+import { Navbar, TabItem, TabContainer, TabContainerItem, Toast } from 'mint-ui'
+import ajax from './../vueResource.ajax.js'
+
+export default {
+    data () {
+        return {
+            viewTitle: '道路救援',
+            iconType: 'icon-fanhui',
+            rightParams: {},
+            swipeable: false,
+            selected: '1',
+            // 可用数据
+            ableData: [],
+            // 不可用数据
+            unAbleData: [],
+            pageAble: 1,
+            pageDisable: 1,
+            // 是否在加载
+            isLoading: false
+        }
+    },
+    components: {
+        'header-common': headerCommon,
+        'mt-navbar': Navbar,
+        'mt-tab-item': TabItem,
+        'mt-tab-container': TabContainer,
+        'mt-tab-container-item': TabContainerItem
+    },
+    beforeCreate () {
+        this.$store.commit('hideFoot')
+    },
+    created () {
+        this.getDiscount('Free', 1)
+        this.loadMore()
+    },
+    methods: {
+        loadMore () {
+            var that = this
+            // 上一步坐标 本次坐标
+            var oldy, cury
+            // 滚动条的高度
+            window.addEventListener('scroll', function (event) {
+                oldy = cury
+                var scrollTop = document.body.scrollTop
+                cury = scrollTop
+                var clientHeight
+                if (that.selected === '1') {
+                    if (that.$refs.slideBar1) {
+                        clientHeight = that.$refs.slideBar1.clientHeight
+                    }
+                } else {
+                    if (that.$refs.slideBar2) {
+                        clientHeight = that.$refs.slideBar2.clientHeight
+                    }
+                }
+                // console.log(clientHeight)
+                if (oldy >= cury) {
+                    return
+                }
+                if (!clientHeight) {
+                    return
+                }
+                if (scrollTop + window.innerHeight >= clientHeight) {
+                    // 触发加载数据
+                    // console.log('bottom')
+                    if (that.selected === '1') {
+                        that.getDiscount('Free', that.pageAble)
+                    } else {
+                        that.getDiscount('Charge', that.pageDisable)
+                    }
+                }
+            })
+        },
+        getDiscount (val, page) {
+            console.log(val, page)
+            if (this.isLoading) {
+                return
+            }
+            this.isLoading = true
+            var params = '?dto.rescueChargeType=' + val + '&dto.pageIndex=' + page + '&dto.pageSize=10'
+            ajax.ajax({
+                'vue': this,
+                'port': 'GetRescues',
+                'type': 'get',
+                'params_url': params,
+                'statusOk': function (res, v) {
+                    console.log(res.data)
+                    v.isLoading = false
+                    if (res.data.data.length <= 0) {
+                        Toast('没有更多')
+                        return
+                    }
+                    Toast('加载成功')
+                    if (val === 'Free') {
+                        v.ableData = v.ableData.concat(res.data.data)
+                        v.pageAble ++
+                    } else {
+                        v.unAbleData = v.unAbleData.concat(res.data.data)
+                        v.pageDisable ++
+                    }
+                },
+                'statusError': function (res, v) {
+                    Toast('获取折扣券失败')
+                }
+            })
+        }
+    },
+    watch: {
+        selected (cur, old) {
+            console.log(cur)
+            if (cur === '1') {
+                this.getDiscount('Free', this.pageAble)
+            } else {
+                this.getDiscount('Charge', this.pageDisable)
+            }
+        }
+    }
+}
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus">
+#roadHelp
+    .roadHelpWrap
+        margin-top:45px
+        .mint-navbar
+            border-bottom:1px solid #ddd
+            position:fixed
+            z-index:1
+            top:45px
+            left:0
+            width:100%
+            .mint-tab-item-label
+                font-size:16px
+                color:#666
+        .mint-tab-item.is-selected
+            border-color:#c7a770
+            .mint-tab-item-label
+                color:#c7a770
+        .mint-tab-container
+            .list
+                padding-top:55px
+                .slideBar
+                    .item
+                        /*margin-top:10px*/
+                        background-color:#fff
+                        /*padding-bottom:10px*/
+                        .top
+                            height:80px
+                            position:relative
+                            padding-left:120px
+                            img
+                                position:absolute
+                                left:10px
+                                top:14px
+                                display:block
+                                border:1px solid #ddd
+                                width:100px
+                                height:50px
+                            p
+                                width:100%
+                                overflow:hidden
+                                padding-top:18px
+                                color:#546273
+                                span
+                                    display:block
+                                    font-size:18px
+                                    &:last-child
+                                        padding-top:4px
+                                        font-size:16PX
+                                        color:#9e9e9e
+                        .bottom
+                            ul
+                                overflow:hidden
+                                margin-left:10px
+                                li
+                                    display:block
+                                    float:left
+                                    width:50%
+                                    color:#546273
+                                    line-height:24px
+                                    overflow:hidden
+                                    span
+                                        margin-right:6px
+        .call
+            width:94%
+            display:block
+            margin:10px auto
+            background-color: #c7a770
+            border:none
+            font-size: 18px
+            color: #fff
+            height: 44px
+            line-height: 44px
+            span
+                vertical-align: top
+                font-size:18px
+                margin-right:6px
+                display:inline-block
+                height:44px
+                line-height:40px
+
+
+
+
+</style>

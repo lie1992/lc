@@ -1,0 +1,62 @@
+<template lang="html">
+    <div id="paymentSUC" >
+        <header-common :title="viewTitle" :iconType="iconType" :rightParams="rightParams" :paths="close" v-on:back2="back2Rel"></header-common>
+        <div class="wrap">
+            <span class="iconfont icon-xuanze"></span>
+            支付成功
+        </div>
+    </div>
+</template>
+
+<script  type="text/ecmascript-6">
+import headerCommon from 'components/header/headerCommon.vue'
+
+export default {
+    data () {
+        return {
+            viewTitle: '支付成功',
+            iconType: 'icon-fanhui',
+            rightParams: {},
+            rightParams: {
+                path: 'close',
+                closeEmit: 'back2'
+            },
+            close: 'close'
+        }
+    },
+    components: {
+        'header-common': headerCommon
+    },
+    created () {
+    },
+    methods: {
+        back2Rel () {
+            var push = this.$route.query.push
+            if (push) {
+                this.$router.go(-1)
+            } else {
+                this.$router.go(-2)
+            }
+        }
+    },
+    beforeCreate () {
+        this.$store.commit('hideFoot')
+    }
+}
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus">
+#paymentSUC
+    .wrap
+        padding-top:55px
+        text-align:center
+        .iconfont
+            margin-top:100px
+            display:block
+            height:62px
+            text-align:center
+            margin-bottom:10px
+            &:before
+                font-size:60px
+                color:#dab96e
+</style>

@@ -1,0 +1,45 @@
+<template>
+    <div class="index">
+        <headerIndex></headerIndex>
+        <mt-swipe :auto="400000">
+            <mt-swipe-item><img src="../assets/images/test1.png" ></mt-swipe-item>
+            <mt-swipe-item><img src="../assets/images/test1.png" ></mt-swipe-item>
+            <mt-swipe-item><img src="../assets/images/test1.png" ></mt-swipe-item>
+        </mt-swipe>
+        <vfooter></vfooter>
+    </div>
+</template>
+
+<script type="text/ecmascript-6">
+    import headerIndex from '../components/header/headerIndex.vue'
+    import vfooter from '../components/footer/footer.vue'
+
+    import 'mint-ui/lib/style.min.css'
+    import { Swipe, SwipeItem } from 'mint-ui'
+
+    export default {
+        data () {
+            return {
+                setHeight: {}
+            }
+        },
+        components: {
+            headerIndex,
+            vfooter,
+            'mt-swipe': Swipe,
+            'mt-swipe-item': SwipeItem
+        },
+        created () {
+            var cwidth = document.body.clientWidth
+            this.$nextTick(function () {
+                document.getElementsByClassName('mint-swipe')[0].style.height = cwidth / 2 + 'px'
+            })
+        },
+        methods: {
+        }
+    }
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus">
+    @import "../assets/css/index.styl"
+</style>

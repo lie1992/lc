@@ -1,0 +1,52 @@
+const comm = {
+    state: {
+        count: 0,
+        carFloor: 1,
+        curCarNum: '浙C88888'
+    },
+    mutations: {
+        showFoot (state) {
+            state.count = 0
+            console.log('footer显示')
+        },
+        hideFoot (state) {
+            state.count = 1
+            console.log('footer隐藏')
+        },
+        showCarFloor (state) {
+            state.carFloor = 0
+            console.log(0)
+        },
+        hidecarFloor (state) {
+            state.carFloor = 1
+            console.log(1)
+        },
+        changeCurCarNum (state) {
+            // state.curCarNum
+        }
+    }
+}
+
+const user = {
+    state: {
+        userName: '',
+        userToken: '',
+        userInfo: {}
+    },
+    mutations: {
+        logout (state) {
+        },
+        setUserInfo (state, userData) {
+            state.userInfo = userData
+        }
+    }
+}
+
+const data = {
+    'comm': comm,
+    'user': user
+}
+
+export default {
+    data
+}

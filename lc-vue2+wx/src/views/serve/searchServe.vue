@@ -1,0 +1,158 @@
+<template lang="html">
+    <!-- 服务列表-->
+    <div class="serveRoot">
+        <div class="searchServe serveCommon">
+            <header-common :title="viewTitle" :iconType="iconType"></header-common>
+            <div class="serveIndexWrap serveCommonWrap">
+                <div class="listWrap" ref="slideBar">
+                    <div class="list" v-for="item in serveData">
+                        <img :src="item.servicePictureUrl" @click="onAddCart(item.id)"/>
+                        <div class="info">
+                            <p class="tt" @click="onAddCart(item.id)">{{item.name}}</p>
+                            <p class="desc" @click="onAddCart(item.id)">{{item.shortDescription}}</p>
+                            <p class="iconGroup">
+                                <span class="door" v-if="item.isDoorToDoorService">上门</span>
+                                <span class="store" v-if="item.isStoreService">门店</span>
+                                <span class="link" @click="onExp(item.id)">服务介绍</span>
+                            </p>
+                            <div class="cart" @click="onAddCart(item.id)"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+import headerCommon from '../../components/header/headerCommon.vue'
+import ajax from './../../vueResource.ajax.js'
+import { Toast, MessageBox } from 'mint-ui'
+
+export default {
+    data () {
+        return {
+            viewTitle: '搜索结果',
+            iconType: 'icon-fanhui',
+            rightParams: {},
+            serveData: [],
+            isLoading: false,
+            page: 1,
+            // 没有数据了
+            isNo: false,
+            keys: ''
+        }
+    },
+    components: {
+        'header-common': headerCommon
+    },
+    beforeCreate () {
+        window.scroll(0,0)
+        this.$store.commit('hideFoot')
+    },
+    created () {
+        var key = this.$route.query.key
+        if (!key) {
+            this.keys = ''
+        }
+        this.keys = key
+        this.getData(this.keys, 1)
+        this.loadMore()
+    },
+    computed: {
+        defaultCar () {
+            return this.$store.state.user.userDefaultCar
+        }
+    },
+    methods: {
+        loadMore () {
+            var that = this
+            var oldy, cury
+            window.addEventListener('scroll', function (event) {
+                oldy = cury
+                var scrollTop = document.body.scrollTop
+                cury = scrollTop
+                var clientHeight
+                if (!that.$refs.slideBar) {
+                    return
+                }
+                clientHeight = that.$refs.slideBar.clientHeight
+                if (oldy >= cury) {
+                    return
+                }
+                if (scrollTop + window.innerHeight >= clientHeight) {
+                    that.getData(that.keys, that.page)
+                }
+            })
+        },
+        getData (key, page) {
+            if (this.isLoading) {
+                return
+            }
+            if (this.isNo) {
+                return
+            }
+            this.isLoading = true
+            var params = {
+                "serviceProductName": key,
+                "page": page,
+                "pageSize": 10
+            }
+            console.log(params)
+            ajax.ajax({
+                'vue': this,
+                'port': 'SearchServiceProducts',
+                'type': 'post',
+                'req_params': params,
+                'statusOk': function (res, v) {
+                    v.isLoading = false
+                    if (res.data.data.length <= 0) {
+                        window.$.PageDialog.ok('没有更多')
+                        v.isNo = true
+                        return
+                    }
+                    v.serveData = v.serveData.concat(res.data.data)
+                    v.page ++
+                },
+                'statusError': function (res, v) {
+                    // Toast('获取用户信息失败')
+                }
+            })
+        },
+        // 服务介绍
+        onExp (id) {
+            this.$router.push('/serveIntroduce/' + id)
+        },
+        onAddCart (id) {
+            var params = {
+                customerCarId: this.defaultCar.id,
+                serviceProductId: id,
+                countyId: this.$store.state.user.curAreaID,
+                longitude: window.sessionStorage.lng,
+                latitude: window.sessionStorage.lat
+            }
+            console.log(params)
+            ajax.ajax({
+                'vue': this,
+                'port': 'AddServiceProductToCart',
+                'type': 'post',
+                'req_params': params,
+                'statusOk': function (res, v) {
+                    var tmpdata = res.data.data
+                    window.$.PageDialog.ok('添加服务成功')
+                    // console.log(tmpdata)
+                    v.$router.push('/cart')
+                    // v.updateCart()
+                },
+                'statusError': function (res, v) {
+                    window.$.PageDialog.ok(res.data.errorMessage)
+                }
+            })
+        }
+    }
+}
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus">
+    @import "../../assets/css/serve.styl"
+</style>

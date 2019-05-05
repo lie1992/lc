@@ -1,0 +1,124 @@
+<template lang="html">
+    <div class="register">
+        <header-common :title="viewTitle" :iconType="iconType" :rightParams="rightParams"></header-common>
+        <div class="registerWrap">
+            <form action="" class="regFrom">
+                <div><input type="text" name="mobile" placeholder="我的手机号" /></div>
+                <div><input type="text" name="code" class="code" placeholder="短信验证码" /><input type="button" name="btn" class="getCode" value="获取验证码"></div>
+                <div><input type="password" name="password" placeholder="我的新密码" /></div>
+                <div><input type="password" name="repassword" placeholder="再次输入新密码" /></div>
+                <input type="hidden" name="checked" value="true"  />
+                <div class="bt"></div>
+                <input type="button" value="确定" class="sub">
+
+            </form>
+
+        </div>
+    </div>
+
+
+</template>
+
+<script>
+import headerCommon from 'components/header/headerCommon.vue'
+
+export default {
+    data () {
+        return {
+            viewTitle: '找回密码',
+            iconType: 'icon-fanhui',
+            rightParams: {}
+        }
+    },
+    components: {
+        'header-common': headerCommon
+    },
+    methods: {
+    },
+    created () {
+    },
+    beforeCreate () {
+        this.$store.commit('hideFoot')
+    }
+}
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus">
+.register
+    .registerWrap
+        margin-top:55px
+        border-top:1px solid #ccc
+        .regFrom
+            background-color:#fff
+            width:100%
+            div
+                height:45px
+                line-height:45px
+                margin-left:45px
+                border-top:1px solid #ccc
+                position:relative
+                &:before
+                    content:''
+                    display:block
+                    position:absolute
+                    left:-40px
+                    top:5px
+                    width:35px
+                    height:35px
+                    background-image:url(../assets/images/icon_account.png)
+                    background-repeat:no-repeat
+                    background-size:19px 213px
+                &:first-child
+                    border-top:none
+                    &:before
+                        background-position:8px -39px
+                &:nth-child(2)
+                    &:before
+                        background-position:8px -87px
+                &:nth-child(3)
+                    &:before
+                        background-position:8px -135px
+                &:nth-child(4)
+                    &:before
+                        background-position:8px -135px
+                &:last-child
+                    border-top:none
+                    text-align:center
+                    margin:0
+                .getCode
+                    height:25px
+                    width:90px
+                    line-height:25px
+                    color:#fff
+                    background-color:#c7a770
+                    float:right
+                    margin-top:10px
+                    margin-right:20px
+                .checkBox
+                    display:inline-block
+                    width:18px
+                    height:18px
+                    border:1px solid #bbb
+                    line-height:19px
+                    margin:0
+                .checked
+                    color:#c7a770
+                input
+                    height:45px
+                    width:100%
+                .code
+                    width:60%
+            .bt
+                height:1px
+                border-top:1px solid #ccc
+                margin:0
+            .sub
+                width:94%
+                height:45px
+                background-color:#c7a770
+                color:#fff
+                display:block
+                margin:15px auto
+
+
+</style>

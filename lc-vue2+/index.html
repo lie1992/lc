@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>尚门理车</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="./static/css/reset.css">
+    <link rel="stylesheet" href="./static/css/animate.css">
+    <!-- <link rel="stylesheet" href="./static/css/light7.min.css"> -->
+    <!-- <script src="../static/js/location.js" charset="utf-8"></script> -->
+    <!-- <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=X3KQeIPEZ1s8e50o9sQbssnqg8whsn5l"></script> -->
+    <style>
+        html,body{
+            background: #f5f5f5!important
+        }
+        #bkcsy{
+            display: none
+        }
+        #pageDialog{
+            z-index:10086
+        }
+        #pageDialog .Prompt{
+            background: rgb(0,0,0);
+            text-align: center;
+            color:#fff;
+            padding: 10px 0;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index:10086
+        }
+        .swiper-container-horizontal>.swiper-pagination-bullets .swiper-pagination-bullet{
+            width:12px;
+            height:12px;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .swiper-pagination-bullet-active {
+            background-color: #c7a770!important
+        }
+        .swiper-pagination{
+            bottom: 25px!important
+        }
+        .mint-indicator {
+            position: absolute;
+            z-index:100000
+        }
+
+        .mint-indicator-mask{
+            display: none!important
+        }
+        .mint-msgbox input{
+            height:42px!important;
+        }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div class="page" style="display:none"></div>
+
+    <script src="./static/js/fastclick.js" charset="utf-8"></script>
+    <script src="./static/js/json2.min.js" charset="utf-8"></script>
+    <script src="./static/js/bundle.js" charset="utf-8"></script>
+    <script type='text/javascript' src='./static/js/jquery.min.3.11.js' charset='utf-8'></script>
+    <script src="./static/js/pageDialog.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+        window.initialize = function () {
+            var geoc = new BMap.Geocoder();
+            window.geoc = geoc
+            window.translation = function (pt) {
+                var point = new BMap.Point(pt.lat, pt.lng);
+                geoc.getLocation(point, function(rs){
+                    var addComp = rs.addressComponents;
+                    window.addComp = addComp
+                });
+            }
+        }
+        window.onload = function () {
+            var script =  document.createElement('script');
+            script.id = 'tempCom';
+            script.src = 'http://api.map.baidu.com/api?v=2.0&ak=SGrAtkNpkorZxRpwyXKSD4B0&callback=initialize';
+            document.body.appendChild(script);
+
+            FastClick.attach(document.body)
+            // 获取版本号
+            window.versions = getQueryString('version');
+
+            // var geoc = new BMap.Geocoder();
+            var ua = userAgent()
+            if (ua === 'android') {
+                if (myJsObj) {
+                    myJsObj.getLocation()
+                    // 极光设备码
+                    window.sessionStorage.jgCode = myJsObj.getRegistration()
+                }
+            } else if (ua === 'ios') {
+                // alert('ios')
+                window.webkit.messageHandlers.HybridKit.postMessage({"method": "location"})
+            } else {
+                // 其他
+                // var geolocation = new BMap.Geolocation();
+                // geolocation.getCurrentPosition(function(r){
+                // 	if(this.getStatus() == BMAP_STATUS_SUCCESS){
+                // 		var mk = new BMap.Marker(r.point);
+                //         window.sessionStorage.lng = r.point.lng;
+                //         window.sessionStorage.lat = r.point.lat;
+                //         // console.log(window.sessionStorage.lng,window.sessionStorage.lat)
+                // 	}
+                // 	else {
+                // 		// alert('failed'+this.getStatus());
+                // 	}
+                // }, {enableHighAccuracy: true})
+            }
+
+
+            // window.geoc = geoc
+            // window.translation = function (pt) {
+            //     var point = new BMap.Point(pt.lat, pt.lng);
+            //     geoc.getLocation(point, function(rs){
+        	// 		var addComp = rs.addressComponents;
+            //         window.addComp = addComp
+        	// 	});
+            // }
+        }
+
+        function getQueryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return unescape(r[2]); return null;
+        }
+        function userAgent() {
+            var ua = navigator.userAgent.toLowerCase()
+            var _ua = ""
+            if (/iphone|ipad|ipod/.test(ua)) {
+                _ua = "ios"
+            } else if (/android/.test(ua)) {
+                _ua = "android"
+            }else{
+                _ua = "web"
+            }
+            return _ua
+        }
+
+        // 客户端调用
+        function locationAt(lng, lat) {
+            window.sessionStorage.lng = lng;
+            window.sessionStorage.lat = lat;
+        }
+
+        function RegisterDevice(val) {
+            // alert(val)
+            // window.$.PageDialog.ok(val)
+            window.sessionStorage.jgCode = val
+        }
+    </script>
+  </body>
+</html>

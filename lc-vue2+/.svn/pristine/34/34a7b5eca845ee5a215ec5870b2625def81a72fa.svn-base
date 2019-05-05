@@ -1,0 +1,39 @@
+<template lang="html">
+    <div id="orderDetail" >
+        <header-common :title="viewTitle" :iconType="iconType" :rightParams="rightParams"></header-common>
+        <div class="orderDetailWrap">
+
+        </div>
+    </div>
+</template>
+
+<script  type="text/ecmascript-6">
+import headerCommon from 'components/header/headerCommon.vue'
+
+export default {
+    data () {
+        return {
+            viewTitle: '订单详情',
+            iconType: 'icon-fanhui',
+            rightParams: {}
+        }
+    },
+    components: {
+        'header-common': headerCommon
+    },
+    created () {
+    },
+    methods: {
+    },
+    beforeCreate () {
+        this.$store.commit('hideFoot')
+    }
+}
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus">
+#orderDetail
+    .orderDetailWrap
+        padding-top:45px
+
+</style>

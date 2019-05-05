@@ -1,0 +1,263 @@
+<template lang="html">
+    <!-- 道路救援 -->
+    <div id="roadHelp">
+        <header-common :title="viewTitle" :iconType="iconType" :rightParams="rightParams"></header-common>
+        <div class="roadHelpWrap">
+            <mt-navbar  v-model="selected">
+                <mt-tab-item id="1">免费</mt-tab-item>
+                <mt-tab-item id="2">付费</mt-tab-item>
+            </mt-navbar>
+
+            <mt-tab-container :swipeable="swipeable"  v-model="selected">
+                <mt-tab-container-item id="1">
+                    <div class="list">
+                        <div class="slideBar">
+                            <div class="item">
+                                <div class="top">
+                                    <img src="../assets/images/test_baoxian.png" alt="">
+                                    <p><span>人保车险道路救援</span><span>(全天24小时服务)</span></p>
+                                </div>
+                                <div class="bottom">
+                                    <ul>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                    </ul>
+                                </div>
+                                <button class="call"><span class="iconfont icon-dianhua"></span>95559</button>
+                            </div><div class="item">
+                                <div class="top">
+                                    <img src="../assets/images/test_baoxian.png" alt="">
+                                    <p><span>人保车险道路救援</span><span>(全天24小时服务)</span></p>
+                                </div>
+                                <div class="bottom">
+                                    <ul>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                    </ul>
+                                </div>
+                                <button class="call"><span class="iconfont icon-dianhua"></span>95559</button>
+                            </div><div class="item">
+                                <div class="top">
+                                    <img src="../assets/images/test_baoxian.png" alt="">
+                                    <p><span>人保车险道路救援</span><span>(全天24小时服务)</span></p>
+                                </div>
+                                <div class="bottom">
+                                    <ul>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                    </ul>
+                                </div>
+                                <button class="call"><span class="iconfont icon-dianhua"></span>95559</button>
+                            </div><div class="item">
+                                <div class="top">
+                                    <img src="../assets/images/test_baoxian.png" alt="">
+                                    <p><span>人保车险道路救援</span><span>(全天24小时服务)</span></p>
+                                </div>
+                                <div class="bottom">
+                                    <ul>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                    </ul>
+                                </div>
+                                <button class="call">95559</button>
+                            </div><div class="item">
+                                <div class="top">
+                                    <img src="../assets/images/test_baoxian.png" alt="">
+                                    <p><span>人保车险道路救援</span><span>(全天24小时服务)</span></p>
+                                </div>
+                                <div class="bottom">
+                                    <ul>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                    </ul>
+                                </div>
+                                <button class="call"><span class="iconfont icon-dianhua"></span>95559</button>
+                            </div><div class="item">
+                                <div class="top">
+                                    <img src="../assets/images/test_baoxian.png" alt="">
+                                    <p><span>人保车险道路救援</span><span>(全天24小时服务)</span></p>
+                                </div>
+                                <div class="bottom">
+                                    <ul>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                    </ul>
+                                </div>
+                                <button class="call"><span class="iconfont icon-dianhua"></span>95559</button>
+                            </div><div class="item">
+                                <div class="top">
+                                    <img src="../assets/images/test_baoxian.png" alt="">
+                                    <p><span>人保车险道路救援</span><span>(全天24小时服务)</span></p>
+                                </div>
+                                <div class="bottom">
+                                    <ul>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                    </ul>
+                                </div>
+                                <button class="call"><span class="iconfont icon-dianhua"></span>95559</button>
+                            </div><div class="item">
+                                <div class="top">
+                                    <img src="../assets/images/test_baoxian.png" alt="">
+                                    <p><span>人保车险道路救援</span><span>(全天24小时服务)</span></p>
+                                </div>
+                                <div class="bottom">
+                                    <ul>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                        <li><span class="iconfont icon-duigouzhuanhuan"></span>援油施救</li>
+                                    </ul>
+                                </div>
+                                <button class="call"><span class="iconfont icon-dianhua"></span>95559</button>
+                            </div>
+                        </div>
+                    </div>
+                </mt-tab-container-item>
+                <mt-tab-container-item id="2">
+                    <div class="list">
+                        <div class="slideBar">
+                            <div class="item">
+                            </div>
+                            <div class="item">
+                            </div>
+                        </div>
+                    </div>
+                </mt-tab-container-item>
+            </mt-tab-container>
+        </div>
+    </div>
+</template>
+
+<script>
+import headerCommon from '../components/header/headerCommon.vue'
+import { Navbar, TabItem, TabContainer, TabContainerItem } from 'mint-ui'
+
+export default {
+    data () {
+        return {
+            viewTitle: '道路救援',
+            iconType: 'icon-fanhui',
+            rightParams: {},
+            swipeable: true,
+            selected: '1'
+        }
+    },
+    components: {
+        'header-common': headerCommon,
+        'mt-navbar': Navbar,
+        'mt-tab-item': TabItem,
+        'mt-tab-container': TabContainer,
+        'mt-tab-container-item': TabContainerItem
+    },
+    beforeCreate () {
+        this.$store.commit('hideFoot')
+    },
+    created () {
+    },
+    methods: {
+    }
+}
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus">
+#roadHelp
+    .roadHelpWrap
+        margin-top:45px
+        .mint-navbar
+            border-bottom:1px solid #ddd
+            .mint-tab-item-label
+                font-size:16px
+                color:#666
+        .mint-tab-item.is-selected
+            border-color:#c7a770
+            .mint-tab-item-label
+                color:#c7a770
+        .mint-tab-container
+            .list
+                .slideBar
+                    .item
+                        margin-top:10px
+                        background-color:#fff
+                        padding-bottom:10px
+                        .top
+                            height:80px
+                            position:relative
+                            padding-left:120px
+                            img
+                                position:absolute
+                                left:10px
+                                top:14px
+                                display:block
+                                border:1px solid #ddd
+                                width:100px
+                                height:50px
+                            p
+                                width:100%
+                                overflow:hidden
+                                padding-top:18px
+                                color:#546273
+                                span
+                                    display:block
+                                    font-size:18px
+                                    &:last-child
+                                        padding-top:4px
+                                        font-size:16PX
+                                        color:#9e9e9e
+                        .bottom
+                            ul
+                                overflow:hidden
+                                margin-left:10px
+                                li
+                                    display:block
+                                    float:left
+                                    width:50%
+                                    color:#546273
+                                    line-height:24px
+                                    overflow:hidden
+                                    span
+                                        margin-right:6px
+        .call
+            width:94%
+            display:block
+            margin:10px auto
+            background-color: #c7a770
+            border:none
+            font-size: 18px
+            color: #fff
+            height: 44px
+            line-height: 44px
+            span
+                vertical-align: top
+                font-size:18px
+                margin-right:6px
+                display:inline-block
+                height:44px
+                line-height:40px
+
+
+
+
+</style>

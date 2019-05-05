@@ -1,0 +1,341 @@
+<template lang="html">
+    <!-- 服务门店 -->
+    <div id="serveStore">
+        <header-common :title="viewTitle" :iconType="iconType" :rightParams="rightParams"></header-common>
+        <div class="serveStoreWrap">
+            <div class="btnWrap">
+                <button @click="selectType(1)">尚门理车上门服务</button>
+            </div>
+            <div class="storeList">
+                <p class="tip">附近的门店</p>
+                <div class="list" ref="slideBar" v-for="item in storeData" @click="selectType(2, item.id)">
+                    <img :src="item.pictureUrl" class="showImg">
+                    <div class="info" id="item.id">
+                        <p>{{item.name}}</p>
+                        <p>
+                            <span class="grade">
+                                <i class="iconfont icon-xing" :class="item.storeRating>=0?'sel':''"></i>
+                                <i class="iconfont icon-xing" :class="item.storeRating>=2?'sel':''"></i>
+                                <i class="iconfont icon-xing" :class="item.storeRating>=3?'sel':''"></i>
+                                <i class="iconfont icon-xing" :class="item.storeRating>=4?'sel':''"></i>
+                                <i class="iconfont icon-xing" :class="item.storeRating>=5?'sel':''"></i>
+                            </span>
+                            <span>已服务车次:{{item.serviceCount}}</span>
+                            <span class="klm">{{item.distance>1000?(item.distance/1000).toFixed(1):item.distance}}{{item.distance>1000?'km':'m'}}</span>
+                        </p>
+                        <p>{{item.detailAddress}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+import headerCommon from '../../components/header/headerCommon.vue'
+import ports from './../../port.js'
+import ajax from './../../vueResource.ajax.js'
+import { Switch, Toast } from 'mint-ui'
+
+export default {
+    data () {
+        return {
+            viewTitle: '门店列表',
+            iconType: 'icon-fanhui',
+            rightParams: {},
+            storeData: [],
+            isLoading: false,
+            page: 1,
+            // 没有数据了
+            isNo: false
+        }
+    },
+    beforeCreate () {
+        window.scroll(0,0)
+        this.$store.commit('hideFoot')
+    },
+    components: {
+        'header-common': headerCommon
+    },
+    created () {
+        this.sid = this.$route.query.sid
+        if (this.$store.state.user.userDefaultCar.id) {
+            this.getCartData()
+        } else {
+            this.getDefaultCarInfo()
+        }
+        this.loadMore()
+    },
+    computed: {
+        cartData () {
+            return this.$store.state.cart.cartData
+        },
+        defaultCar () {
+            return this.$store.state.user.userDefaultCar
+        }
+    },
+    methods: {
+        loadMore () {
+            var that = this
+            var oldy, cury
+            window.addEventListener('scroll', function (event) {
+                oldy = cury
+                var scrollTop = document.body.scrollTop
+                cury = scrollTop
+                var clientHeight
+                if (!that.$refs.slideBar) {
+                    return
+                }
+                clientHeight = that.$refs.slideBar.clientHeight
+                if (oldy >= cury) {
+                    return
+                }
+                if (scrollTop + window.innerHeight >= clientHeight) {
+                    that.getList(that.page)
+                }
+            })
+        },
+        getStoreList () {
+            if (this.isLoading) {
+                return
+            }
+            if (this.isNo) {
+                return
+            }
+            this.isLoading = true
+            var that = this
+            // console.log(this.defaultCar)
+            var currCarId = this.defaultCar.carId
+            // var currCarId = '1'
+            // var pageIndex = 1
+            var params = '?dto.longitude=' + window.sessionStorage.lng +
+            '&dto.latitude=' + window.sessionStorage.lat +
+            '&dto.carId=' + currCarId + '&dto.page=' + this.page +
+            '&dto.pageSize=100' +
+            '&dto.countyId=' + this.$store.state.user.curAreaID
+
+            if (!this.$store.state.user.curAreaID) {
+                window.$.PageDialog.ok('无法自动获取定位信息，请手动选择您当前的区域')
+            }
+            this.$http.get(ports.port.GetStores + params).then((res) => {
+                console.log(res.data.data)
+                if (res.data.success === true) {
+                    this.isLoading = false
+                    if (res.data.data.length <= 0) {
+                        // Toast('没有更多')
+                        this.isNo = true
+                        return
+                    }
+                    this.page ++
+                    this.storeData = res.data.data
+                } else {
+                }
+            })
+        },
+        selectType (type, id) {
+            // 1尚门 2门店
+            var sid = this.$route.query.sid
+            var params = {
+                customerCarId: this.defaultCar.id,
+                serviceProductShoppingCartItemId: this.sid,
+                serviceTypeId: type
+                // storeId: id
+            }
+            if (id) {
+                params.storeId = id
+            }
+            // console.log(params)
+            ajax.ajax({
+                'vue': this,
+                'port': 'UpdateServiceProductCartItem',
+                'type': 'post',
+                'req_params': params,
+                'statusOk': function (res, v) {
+                    // Toast('更新配件成功')
+                    v.getCartData()
+                    v.$router.back()
+                },
+                'statusError': function (res, v) {
+                    window.$.PageDialog.ok(res.data.errorMessage)
+                }
+            })
+        },
+        // 获取购物车数据
+        getCartData () {
+            ajax.ajax({
+                'vue': this,
+                'port': 'GetShoppingCart',
+                'type': 'get',
+                'params_url': '?customerCarId=' + this.defaultCar.id,
+                'statusOk': function (res, v) {
+                    v.$store.state.cart.cartData = res.data.data
+                    // console.log(res.data.data)
+                    var dat = v.cartData.serviceShoppingCartItems
+                    v.getStoreList()
+                },
+                'statusError': function (res, v) {
+                    window.$.PageDialog.ok('获取购物车列表失败')
+                }
+            })
+        },
+        getDefaultCarInfo () {
+            if (!this.$store.state.user.curCarNum) {
+                ajax.ajax({
+                    'vue': this,
+                    'port': 'GetDefaultCustomerCar',
+                    'type': 'get',
+                    'statusOk': function (res, v) {
+                        v.$store.state.user.userDefaultCar = res.data.data
+                        v.$store.state.user.curCarNum = v.$store.state.user.userDefaultCar.displayLicensePlate
+                        v.getCartData()
+                    },
+                    'statusError': function (res, v) {
+                        window.$.PageDialog.ok('获取用户信息失败')
+                    }
+                })
+            } else {
+                var listData = this.$store.state.user.userCarList
+                var curCarID = this.$store.state.user.curCarData.id
+                for (var i = 0; i < listData.length; i++) {
+                    if (listData[i].id === curCarID) {
+                        this.$store.state.user.userDefaultCar = listData[i]
+                        v.getCartData()
+                    }
+                }
+            }
+        }
+    }
+}
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus">
+#serveStore
+    .serveStoreWrap
+        padding-top:45px
+        .btnWrap
+            /*height:80px*/
+            position:fixed
+            z-index:2
+            top:45px
+            width:100%
+            background-color:#fff
+            border-bottom:1px solid #ddd
+            button
+                width: 94%
+                margin: 10px 3% 10px 3%
+                background-color: #c7a770
+                height: 44px
+                line-height: 44px
+                color: #fff
+                border: none
+                font-size: 18px
+        .storeList
+            margin-top:65px
+            .tip
+                background-color:#f1f1f1
+                line-height:32px
+                padding-left:10px
+            .list
+                padding-left:115px
+                padding-top:10px
+                position:relative
+                background-color:#fff
+                height:85px
+                border-bottom:1px solid #ddd
+                .showImg
+                    width:100px
+                    height:75px
+                    position:absolute
+                    left:10px
+                    top:10px
+                p
+                    &:first-child
+                        width:100%
+                        white-space:nowrap
+                        overflow:hidden
+                        text-overflow:ellipsis
+                        color:#333
+                        margin-bottom:10px
+                    &:nth-child(2)
+                        width:100%
+                        font-size:14px
+                        color:#999
+                        position:relative
+                        margin-bottom:10px
+                        .grade
+                            display:inline-block
+                            height:13px
+                            line-height:13px
+                            vertical-align:top
+                            letter-spacing: -1px
+                            i
+                                font-size:14px
+                                color:#ccc
+                            .sel
+                                color:#ffb400
+                        .klm
+                            position:absolute
+                            right:5px
+                    &:last-child
+                        color:#999
+                        white-space:nowrap
+                        overflow:hidden
+                        text-overflow:ellipsis
+
+@media screen and (max-width: 374px)
+    #serveStore
+        .serveStoreWrap
+            .storeList
+                .tip
+                    padding-left:10px
+                .list
+                    padding-left:100px
+                    padding-top:10px
+                    position:relative
+                    background-color:#fff
+                    height:78px
+                    border-bottom:1px solid #ddd
+                    .showImg
+                        width:90px
+                        height:67.5px
+                        position:absolute
+                        left:5px
+                        top:10px
+                    p
+                        &:first-child
+                            width:100%
+                            white-space:nowrap
+                            overflow:hidden
+                            text-overflow:ellipsis
+                            color:#333
+                            margin-bottom:10px
+                        &:nth-child(2)
+                            width:100%
+                            font-size:13px
+                            color:#999
+                            position:relative
+                            margin-bottom:10px
+                            .grade
+                                display:inline-block
+                                height:13px
+                                line-height:13px
+                                vertical-align:top
+                                letter-spacing: -2px
+                                i
+                                    font-size:12px
+                                    color:#ccc
+                                .sel
+                                    color:#ffb400
+                            .klm
+                                position:absolute
+                                right:5px
+                        &:last-child
+                            color:#999
+                            white-space:nowrap
+                            overflow:hidden
+                            text-overflow:ellipsis
+
+
+
+
+</style>

@@ -1,0 +1,333 @@
+<template lang="html">
+    <!-- 预约时间 -->
+    <div id="appointment">
+        <!-- <header-common :title="viewTitle" :iconType="iconType" :rightParams="rightParams" :paths="close" v-on:closeYY="closeYYRel"></header-common> -->
+        <div class="headerCommon">
+            <div class="currentArea">
+                <a class="iconfont" :class="iconType" @click="closeYYRel()"></a>
+            </div>
+            <div class="title">预约时间</div>
+            <div class="headRight">
+                <a @click="closeYYRel()">完成</a>
+            </div>
+        </div>
+        <div class="appointmentWrap">
+            <div class="dayList">
+                <div class="swiper-container"  ref="scrollBar">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide" v-for="item in dayList.day" @click="changeYYTime(item.date)">{{item.week}}<br>{{item.date}}</div>
+                    </div>
+                    <div class="swiper-button-prev iconfont icon-chevron-copy"></div>
+                    <div class="swiper-button-next iconfont icon-chevron-copy-copy-copy-copy-copy-copy"></div>
+                </div>
+            </div>
+            <div class="timeList" ref="timeScroll">
+                <ul>
+                    <li v-for="time in timeList.dispatchs" :class="{sel:time.sel,dis:!time.enabled}" @click="select(time)">{{time.appointmentTime}}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+import headerCommon from '../../components/header/headerCommon.vue'
+import Swiper from 'swiper'
+import '../../../node_modules/swiper/dist/css/swiper.min.css'
+import Bscroll from 'better-scroll'
+import ajax from './../../vueResource.ajax.js'
+import { Toast } from 'mint-ui'
+
+export default {
+    props: {
+        YYType: {
+            type: Number
+        },
+        YYDur: {
+            type: Number
+        },
+        YYAddressID: {
+            type: Number
+        },
+        YYServeID: {
+            type: Number
+        }
+    },
+    data () {
+        return {
+            viewTitle: '预约时间',
+            iconType: 'icon-fanhui',
+            rightParams: {
+                path: 'close',
+                closeEmit: 'closeYY'
+            },
+            close: 'close',
+            dateTime: ['2-10', '2-11', '2-12', '2-13', '2-14', '2-15', '2-16'],
+            dataTxt: ['今天', '明天', '后天'],
+            // 日期列表
+            dayList: [],
+            // 时间列表
+            timeList: [],
+            // 当前日期
+            curDate: ''
+        }
+    },
+    components: {
+        'header-common': headerCommon
+    },
+    created () {
+        this.$nextTick(function () {
+            this._initScroll()
+        })
+        this.getYYdate()
+    },
+    computed: {
+        // cartData () {
+        //     return this.$store.state.cart.cartData
+        // }
+    },
+    methods: {
+        _initScroll () {
+            this.viewScroll = new Swiper(this.$refs.scrollBar, {
+                slideToClickedSlide: true,
+                centeredSlides: true,
+                slidesPerView: 3,
+                nextButton: '.swiper-button-next',
+                prevButton: '.swiper-button-prev'
+            })
+        },
+        select (val) {
+            if (val.enabled === false) {
+                window.$.PageDialog.ok("该时间不能预约")
+                return false
+            }
+            var dat = this.timeList
+            // console.log(dat)
+            for (var i = 0; i < dat.dispatchs.length; i++) {
+                dat.dispatchs[i].sel = false
+            }
+            val.sel = true
+            // console.log(this.YYType)
+            if (this.YYType === 2) {
+                var mdData = this.$store.state.cart.cartConfirmMDData
+                for (var i = 0; i < mdData.length; i++) {
+                    // console.log(mdData[i].storeId)
+                    // console.log(this.YYServeID)
+                    if (mdData[i].storeId === this.YYServeID) {
+                        mdData[i].YY =  this.curDate + ' ' + val.appointmentTime
+                    }
+                }
+            } else {
+                var smData = this.$store.state.cart.cartConfirmSMData
+                smData.YY = this.curDate + ' ' + val.appointmentTime
+            }
+        },
+        changeYYTime (val) {
+            // console.log(val)
+            var year = new Date().getFullYear()
+            val = year + '-' + val
+            if (this.YYType === 2) {
+                this.getMDYYTime(val)
+            } else {
+                this.getYYTime(val, this.YYDur, this.YYAddressID )
+            }
+        },
+        // 分开处理！
+        // 获取门店预约时间
+        getMDYYTime (date) {
+            this.curDate = date
+            ajax.ajax({
+                'vue': this,
+                'port': 'GetStoreDispatchInfo',
+                'type': 'get',
+                'params_url': '?dispatchDate=' + date,
+                'statusOk': function (res, v) {
+                    // console.log(res.data.data)
+                    var dat = res.data.data
+                    for (var i = 0; i < dat.dispatchs.length; i++) {
+                        dat.dispatchs[i]['sel'] = false
+                    }
+                    v.timeList = dat
+                    // console.log(v.timeList)
+                 },
+                'statusError': function (res, v) {
+                    window.$.PageDialog.ok(res.data.errorMessage)
+                }
+            })
+        },
+        // 获取上门预约时间
+        getYYTime (date, dur, aid) {
+            this.curDate = date
+            ajax.ajax({
+                'vue': this,
+                'port': 'GetDispatchInfo',
+                'type': 'get',
+                'params_url': '?dispatchDate=' + date + '&duration=' + dur + '&addressId=' + aid,
+                'statusOk': function (res, v) {
+                    // console.log(res.data.data)
+                    var dat = res.data.data
+                    if (dat.dispatchs <=0 ) {
+                        window.$.PageDialog.ok('您当前区域无法获取上门服务预约时间')
+                        return false
+                    }
+                    for (var i = 0; i < dat.dispatchs.length; i++) {
+                        dat.dispatchs[i]['sel'] = false
+                    }
+                    v.timeList = dat
+                    // console.log(v.timeList)
+                 },
+                'statusError': function (res, v) {
+                    window.$.PageDialog.ok(res.data.errorMessage)
+                }
+            })
+        },
+        getYYdate () {
+            ajax.ajax({
+                'vue': this,
+                'port': 'GetDispatchDayInfo',
+                'type': 'get',
+                'statusOk': function (res, v) {
+                    // console.log(res.data.data)
+                    var dat = res.data.data
+                    dat.day = []
+                    for (var i = 0; i < dat.dispatchDays.length; i++) {
+                        var date = new Date(dat.dispatchDays[i])
+                        var week = date.getDay()
+                        var str = ''
+                        if (week == 0) {
+                            str = '周日'
+                        } else if (week == 1) {
+                            str = '周一'
+                        } else if (week == 2) {
+                            str = '周二'
+                        } else if (week == 3) {
+                            str = '周三'
+                        } else if (week == 4) {
+                            str = '周四'
+                        } else if (week == 5) {
+                            str = '周五'
+                        } else if (week == 6) {
+                            str = '周六'
+                        }
+                        var tmp = {}
+                        tmp['week'] = str
+                        var month = parseInt(date.getMonth()) + 1
+                        // tmp['date'] = date.getFullYear() + '-' + month + '-' + date.getDate()
+                        tmp['date'] = month + '-' + date.getDate()
+                        dat.day.push(tmp)
+                    }
+                    v.dayList = dat
+                    var todayDate = new Date()
+                    var thisMonth = parseInt(todayDate.getMonth()) + 1
+                    var p1 = todayDate.getFullYear() + '-' + thisMonth + '-' + todayDate.getDate()
+
+                    if (v.YYType === 2) {
+                        v.getMDYYTime(p1)
+                    } else {
+                        v.getYYTime(p1, v.YYDur, v.YYAddressID)
+                    }
+                    setTimeout(function() {
+                        v.viewScroll.update()
+                    },300)
+                    // console.log(v.dayList)
+                },
+                'statusError': function (res, v) {
+                    window.$.PageDialog.ok('当前不能预约服务时间，请联系尚门理车客服。')
+                }
+            })
+        },
+        // 关闭预约
+        closeYYRel () {
+            this.$emit('closeYYInParent')
+        }
+    },
+    beforeCreate () {
+        // this.$store.commit('hideFoot')
+    }
+}
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus">
+#appointment
+    position:fixed
+    width:100%
+    min-height:100%
+    z-index:101
+    top:0
+    background-color:#f5f5f5
+    .appointmentWrap
+        padding-top:45px
+        .dayList
+            position:fixed
+            width:100%
+            top:45px
+            left:0
+            z-index:2
+            background-color:#fff
+            span
+                position:absolute
+                width:30px
+                height:55px
+                line-height:55px
+                text-align:center
+                color:#999
+                font-size:14px
+                z-index:5
+            .btnLeft
+                left:0
+            .btnRight
+                right:0
+            .swiper-container
+                border-bottom:1px solid #ddd
+                .swiper-button-prev
+                    background:none
+                    line-height:45px
+                    text-align:center
+                .swiper-button-next
+                    background:none
+                    line-height:45px
+                    text-align:center
+                .swiper-wrapper
+                    .swiper-slide
+                        height:45px
+                        background-color:#fff
+                        padding-top:10px
+                        display:block
+                        float:left
+                        width:33.33%
+                        text-align:center
+                        font-size:17px
+                    .swiper-slide-active
+                        color:#dab96e
+        .timeList
+            margin-top:10px
+            padding-left:4%
+            position:absolute
+            width:96%
+            top:100px
+            bottom:0
+            ul
+                overflow:hidden
+                li
+                    background-color:#fff
+                    display:block
+                    float:left
+                    width:21.5%
+                    height:55px
+                    text-align:center
+                    line-height:55px
+                    margin-right:3%
+                    margin-bottom:10px
+                .dis
+                    background-color:#ddd
+                .sel
+                    background-color:#dab96e
+                    color:#fff
+
+
+
+
+
+
+
+</style>

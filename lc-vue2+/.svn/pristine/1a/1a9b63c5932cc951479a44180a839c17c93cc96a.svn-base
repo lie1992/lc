@@ -1,0 +1,206 @@
+<template lang="html">
+    <!-- 忘记密码 -->
+    <div class="findpassdord">
+        <header-common :title="viewTitle" :iconType="iconType" :rightParams="rightParams"></header-common>
+        <div class="registerWrap">
+            <form action="" class="regFrom">
+                <div><input type="text" name="mobile" placeholder="我的手机号" v-model="mobile" /></div>
+                <div><input type="text" name="code" class="code" placeholder="短信验证码" v-model="code" /><input type="button" name="btn" class="getCode"  :class="{ disabled:isCodeDisabled }" :value="codeCount === 0? '获取验证码': codeCount + 's'" :disabled="isCodeDisabled"  @click="onGetCode"></div>
+                <div><input type="password" name="password" placeholder="我的新密码" v-model="password" /></div>
+                <div><input type="password" name="repassword" placeholder="再次输入新密码" v-model="repassword"/></div>
+                <input type="hidden" name="checked" value="true"  />
+                <div class="bt"></div>
+                <input type="button" value="确定" class="sub" @click="onSubmit">
+            </form>
+
+        </div>
+    </div>
+
+
+</template>
+
+<script>
+import headerCommon from 'components/header/headerCommon.vue'
+import { Toast } from 'mint-ui'
+import ports from './../port.js'
+
+export default {
+    data () {
+        return {
+            viewTitle: '找回密码',
+            iconType: 'icon-fanhui',
+            rightParams: {},
+            mobile: '',
+            code: '',
+            codeKey: '',
+            password: '',
+            repassword: '',
+            // 验证码倒计时
+            codeCount: 0,
+            isCodeDisabled: false
+        }
+    },
+    components: {
+        'header-common': headerCommon
+    },
+    methods: {
+        onGetCode () {
+            var reg = /^1[34578]\d{9}$/
+            if (!reg.test(this.mobile)) {
+                window.$.PageDialog.ok('手机号码填写错误')
+                return false
+            }
+            var params = {
+                'mobile': this.mobile
+            }
+            this.$http.post(ports.port.findCode, params).then((res) => {
+                if (res.data.success === true) {
+                    this.codeKey = res.data.data
+                    this.codeCount = 60
+                    this.isCodeDisabled = true
+                    this.onTimeRoll()
+                    window.$.PageDialog.ok('手机验证码已发送')
+                } else {
+                    window.$.PageDialog.ok('验证码发送失败')
+                }
+            }, (res) => {
+            })
+        },
+        onSubmit () {
+            var reg = /^1[34578]\d{9}$/
+            if (!reg.test(this.mobile)) {
+                window.$.PageDialog.ok('手机号码填写错误')
+                return false
+            }
+            if (!this.code) {
+                window.$.PageDialog.ok('请填写验证码')
+                return false
+            }
+            if (this.password.length < 6) {
+                window.$.PageDialog.ok('密码不能小于6位')
+                return false
+            }
+            if (this.repassword !== this.password) {
+                window.$.PageDialog.ok('两次密码不相同')
+                return false
+            }
+            var params = {
+                'mobile': this.mobile,
+                'newPassword': this.password,
+                'codeKey': this.codeKey,
+                'code': this.code
+            }
+            var that = this
+            this.$http.post(ports.port.findSubmit, params).then((res) => {
+                if (res.data.success === true) {
+                    window.$.PageDialog.ok('密码修改成功')
+                    setTimeout(function () {
+                        that.$router.push('/login')
+                    }, 2500)
+                } else {
+                    window.$.PageDialog.ok('密码修改失败，请稍后重试')
+                }
+            }, (res) => {
+            })
+        },
+        onTimeRoll () {
+            var that = this
+            var timeRoll = setInterval(function () {
+                if (that.codeCount > 0) {
+                    that.codeCount --
+                } else {
+                    clearInterval(timeRoll)
+                    timeRoll = null
+                    that.isCodeDisabled = false
+                }
+            }, 1000)
+        }
+    },
+    created () {
+    },
+    beforeCreate () {
+        this.$store.commit('hideFoot')
+    }
+}
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus">
+.findpassdord
+    .registerWrap
+        margin-top:55px
+        border-top:1px solid #ccc
+        .regFrom
+            background-color:#fff
+            width:100%
+            div
+                height:45px
+                line-height:45px
+                margin-left:45px
+                border-top:1px solid #ccc
+                position:relative
+                &:before
+                    content:''
+                    display:block
+                    position:absolute
+                    left:-40px
+                    top:5px
+                    width:35px
+                    height:35px
+                    background-image:url(../assets/images/icon_account.png)
+                    background-repeat:no-repeat
+                    background-size:19px 213px
+                &:first-child
+                    border-top:none
+                    &:before
+                        background-position:8px -39px
+                &:nth-child(2)
+                    &:before
+                        background-position:8px -87px
+                &:nth-child(3)
+                    &:before
+                        background-position:8px -135px
+                &:nth-child(4)
+                    &:before
+                        background-position:8px -135px
+                &:last-child
+                    border-top:none
+                    text-align:center
+                    margin:0
+                .getCode
+                    height:25px
+                    width:90px
+                    line-height:25px
+                    color:#fff
+                    background-color:#c7a770
+                    float:right
+                    margin-top:10px
+                    margin-right:20px
+                    font-size:13px
+                .checkBox
+                    display:inline-block
+                    width:18px
+                    height:18px
+                    border:1px solid #bbb
+                    line-height:19px
+                    margin:0
+                .checked
+                    color:#c7a770
+                input
+                    height:45px
+                    width:100%
+                .code
+                    width:60%
+            .bt
+                height:1px
+                border-top:1px solid #ccc
+                margin:0
+            .sub
+                width:94%
+                height:45px
+                background-color:#c7a770
+                color:#fff
+                display:block
+                margin:15px auto
+
+
+</style>

@@ -1,0 +1,98 @@
+<template lang="html">
+    <div class="serveRoot">
+        <header-cart :title="$store.state.user.curCarNum" :iconType="iconType" :rightParams="rightParams"></header-cart>
+        <div class="serveType">
+            <router-link to="/serve/index">保养<em></em></router-link>
+            <router-link to="/serve/fix">维修<em></em></router-link>
+            <router-link to="/serve/hairdressing">美容<em></em></router-link>
+            <router-link to="/serve/tire">轮胎<em></em></router-link>
+            <router-link to="/serve/sprinkle">无痕钣喷</router-link>
+        </div>
+        <router-view></router-view>
+    </div>
+</template>
+
+<script>
+import headerCart from '../../components/header/headerCart.vue'
+import { Toast } from 'mint-ui'
+import ajax from './../../vueResource.ajax.js'
+export default {
+    data () {
+        return {
+            iconType: 'icon-fanhui',
+            rightParams: {
+                path: '/cart',
+                desc: ''
+            }
+        }
+    },
+    components: {
+        'header-cart': headerCart
+    },
+    beforeCreate () {
+        this.$store.commit('hideFoot')
+    },
+    computed: {
+        cartData () {
+            return this.$store.state.cart.cartData
+        },
+        defaultCar () {
+            return this.$store.state.user.userDefaultCar
+        }
+    },
+    created () {
+        if (this.$store.state.user.userDefaultCar.displayLicensePlate) {
+            this.$store.state.user.curCarNum = this.$store.state.user.userDefaultCar.licensePlate
+        } else {
+            this.getDefaultCarInfo()
+        }
+    },
+    methods: {
+        getCartData () {
+            ajax.ajax({
+                'vue': this,
+                'port': 'GetShoppingCart',
+                'type': 'get',
+                'params_url': '?customerCarId=' + this.defaultCar.id,
+                'statusOk': function (res, v) {
+                    v.$store.state.cart.cartData = res.data.data
+                    console.log(v.cartData.serviceShoppingCartItems.length)
+                    v.rightParams.desc = v.cartData.serviceShoppingCartItems.length
+                },
+                'statusError': function (res, v) {
+                    Toast('获取购物车列表失败')
+                }
+            })
+        },
+        getDefaultCarInfo () {
+            if (!this.$store.state.user.curCarNum) {
+                ajax.ajax({
+                    'vue': this,
+                    'port': 'GetDefaultCustomerCar',
+                    'type': 'get',
+                    'statusOk': function (res, v) {
+                        v.$store.state.user.userDefaultCar = res.data.data
+                        v.$store.state.user.curCarNum = v.$store.state.user.userDefaultCar.displayLicensePlate
+                        v.getCartData()
+                    },
+                    'statusError': function (res, v) {
+                        Toast('获取用户信息失败')
+                    }
+                })
+            } else {
+                var listData = this.$store.state.user.userCarList
+                var curCarID = this.$store.state.user.curCarData.id
+                for (var i = 0; i < listData.length; i++) {
+                    if (listData[i].id === curCarID) {
+                        this.$store.state.user.userDefaultCar = listData[i]
+                        v.getCartData()
+                    }
+                }
+            }
+        }
+    }
+}
+</script>
+<style lang="stylus" rel="stylesheet/stylus">
+    @import "../../assets/css/serve.styl"
+</style>

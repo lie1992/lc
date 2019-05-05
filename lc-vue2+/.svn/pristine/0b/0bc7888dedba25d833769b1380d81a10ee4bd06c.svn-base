@@ -1,0 +1,288 @@
+<template lang="html">
+    <div id="cart" >
+        <header-common :title="viewTitle" :iconType="iconType" :rightParams="rightParams"></header-common>
+        <div class="cartWrap carTop">
+            <div class="CarInfo iconfont icon-chevron-copy-copy-copy-copy-copy-copy" @click="$router.push('/user/carList')">
+                <div class="CarInfoWrap">
+                    <div class="carLogo">
+                        <img src="../assets/images/test_carlogo.png" >
+                    </div>
+                    <div class="carInfo">
+                        <div class="carID">浙·C88888 </div>
+                        <div class="carDesc">2016款 奥迪A4L 自动 舒适型 典藏版</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="scroll" ref="scroll">
+                <div class="scrollBar">
+                    <div class="content">
+                        <div class="tt" @click="onAddServe()"><i class="iconfont icon-combinedshape"></i>添加服务项目</div>
+                    </div>
+                    <div class="content project-store">
+                        <div class="tt">
+                            <i class="sel iconfont icon-xuanze"></i>定期小保养
+                            <span class="desc">耗时<em>45分钟</em>服务费<em>￥90</em></span>
+                        </div>
+                        <div class="item">
+                            <p class="ttl">
+                                <span class="name">机油</span>
+                                <span class="desc">嘉实多极护(4L)</span>
+                            </p>
+                            <p class="cost">￥1222</p>
+                            <p class="change" @click="onChangePJ()">更换<span class="iconfont icon-chevron-copy-copy-copy-copy-copy-copy"></span></p>
+                        </div>
+                        <div class="item">
+                            <p class="ttl">
+                                <span class="name">机油</span>
+                                <span class="desc">嘉实多极护(4L)</span>
+                            </p>
+                            <p class="cost">￥1222</p>
+                            <p class="change">更换<span class="iconfont icon-chevron-copy-copy-copy-copy-copy-copy"></span></p>
+                        </div>
+                        <div class="serveStore">
+                            <p class="ttl">
+                                <span class="name">球山花苑店</span>
+                                <span class="desc">温州市鹿城区xxxxxxxxx</span>
+                            </p>
+                            <p class="change" @click="onChangeStore()">更换<span class="iconfont icon-chevron-copy-copy-copy-copy-copy-copy"></span></p>
+                        </div>
+                    </div>
+                    <div class="content project-store">
+                        <div class="tt">
+                            <i class="sel iconfont icon-xuanze"></i>定期小保养
+                            <span class="desc">耗时<em>45分钟</em>服务费<em>￥90</em></span>
+                        </div>
+                        <div class="item">
+                            <p class="ttl">
+                                <span class="name">机油</span>
+                                <span class="desc">嘉实多极护(4L)</span>
+                            </p>
+                            <p class="cost">￥1222</p>
+                            <p class="change">更换<span class="iconfont icon-chevron-copy-copy-copy-copy-copy-copy"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="totalWrap">
+                <div class="left">
+                    <span class="sel iconfont icon-xuanze"></span>全选
+                </div>
+                <div class="right">
+                    <div class="hj">
+                        合计：<span>￥555</span><br>
+                        <p>共2项服务</p>
+                    </div>
+                    <div class="buy" @click="onCartConform()">下单</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script  type="text/ecmascript-6">
+import Bscroll from 'better-scroll'
+import headerCommon from 'components/header/headerCommon.vue'
+
+export default {
+    data () {
+        return {
+            viewTitle: '购物车',
+            iconType: '',
+            rightParams: {
+                path: '/cartCompile',
+                desc: '编辑'
+            }
+        }
+    },
+    components: {
+        'header-common': headerCommon
+    },
+    created () {
+        this.$nextTick(function () {
+            this._initScroll()
+        })
+    },
+    methods: {
+        _initScroll () {
+            this.viewScroll = new Bscroll(this.$refs.scroll, {
+                click: true,
+                scrollY: true
+            })
+        },
+        onAddServe () {
+            this.$router.push('/serve/index')
+        },
+        onChangeStore () {
+            this.$router.push('/serveStore')
+        },
+        onChangePJ () {
+            this.$router.push('/cartAccessories')
+        },
+        onCartConform () {
+            this.$router.push('/orderConfirm')
+        }
+    },
+    beforeCreate () {
+        this.$store.commit('showFoot')
+    }
+}
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus">
+@import '../assets/css/cssCommon.styl'
+#cart
+    .cartWrap
+        padding-top:45px
+        .scroll
+            position:absolute
+            top:141px
+            bottom:100px
+            width:100%
+            overflow:hidden
+        .content
+            margin-bottom:10px
+            background-color:#fff
+            border-bottom:1px solid #ddd
+            .tt
+                line-height:50px
+                padding-left:12px
+                color:#666
+                border-bottom:1px solid #ddd
+                font-size:18px
+                margin-bottom:-1px
+                .desc
+                    color:#999
+                    font-size:15px
+                    float:right
+                    padding-right:10px
+                    em
+                        color:#c7a770
+                        font-style:normal
+                        font-family:'微软雅黑'
+                        &:first-child
+                            margin-right:5px
+                i
+                    margin-right:5px
+                    display:inline-block
+                    padding:0
+                    &:before
+                        color:#999
+                        font-size:24px
+                        vertical-align:middle
+                .sel
+                    &:before
+                        color:#c7a770
+            .item
+                margin-left:42px
+                overflow:hidden
+                border-bottom:1px solid #ddd
+                &:last-child
+                    border:none
+                p
+                    line-height:58px
+                    float:left
+                .cost
+                    font-family:'微软雅黑'
+                .ttl
+                    width:58%
+                    span
+                        display:block
+                        white-space:nowrap
+                        overflow:hidden
+                        text-overflow:ellipsis
+                        overflow:hidden
+                        &:first-child
+                            margin-top:2px
+                            line-height:30px
+                            height:30px
+                        &:last-child
+                            line-height:20px
+                            color:#999
+                            height:20px
+                            font-size:14px
+                .change
+                    float:right
+                    color:#c7a770
+                    span
+                        color:#999
+                        margin-left:5px
+            .serveStore
+                line-height:55px
+                overflow:hidden
+                padding-left:12px
+                border-top:1px solid #ddd
+                margin-top:-1px
+                p
+                    float:left
+                    .name
+                        display:block
+                        font-size:18px
+                        margin-top:2px
+                        line-height:30px
+                    .desc
+                        font-size:15px
+                        color:#999
+                        display:block
+                        line-height:20px
+                        height:20px
+                        white-space:nowrap
+                        overflow:hidden
+                        text-overflow:ellipsis
+                        overflow:hidden
+                .ttl
+                    width:75%
+                    overflow:hidden
+                .change
+                    float:right
+                    color:#c7a770
+                    span
+                        margin-left:10px
+                        color:#999
+        .totalWrap
+            position:fixed
+            width:100%
+            height:50px
+            bottom:50px
+            left:0
+            background-color:#f5f5f5
+            border-top:1px solid #ddd
+            .left
+                float:left
+                line-height:50px
+                padding-left:12px
+                color:#333
+                span
+                    font-size:24px
+                    vertical-align:middle
+                    color:#999
+                    margin-right:5px
+                .sel
+                    color:#c7a770
+            .right
+                height:50px
+                float:right
+                position:relative
+                padding-right:107px
+                .buy
+                    position:absolute
+                    top:7px
+                    right:12px
+                    display:inline-block
+                    width:90px
+                    height:36px
+                    line-height:36px
+                    text-align:center
+                    background-color:#c7a770
+                    color:#fff
+                .hj
+                    margin-top:8px
+                    span
+                        color:#c7a770
+                    p
+                        font-size:14px
+                        margin-top:2px
+
+
+</style>

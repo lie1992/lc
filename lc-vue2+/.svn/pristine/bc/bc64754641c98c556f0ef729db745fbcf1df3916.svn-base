@@ -1,0 +1,137 @@
+<template lang="html">
+    <div id="balanceDetail" >
+        <header-common :title="viewTitle" :iconType="iconType" :rightParams="rightParams"></header-common>
+        <div class="balanceDetailWrap">
+            <div class="listWrap" ref="slideBar">
+                <div class="list" v-for="item in data">
+                    <p class="tt">{{item.title}}</p>
+                    <p class="time">{{item.createOn}}</p>
+                    <p class="money add">{{item.balanceChangeTypeId===2?'-':'+'}}￥{{item.amount}}</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</template>
+
+<script  type="text/ecmascript-6">
+import headerCommon from 'components/header/headerCommon.vue'
+import ajax from './../../vueResource.ajax.js'
+
+export default {
+    data () {
+        return {
+            viewTitle: '余额明细',
+            iconType: 'icon-fanhui',
+            rightParams: {},
+            page: 1,
+            isNo: false,
+            isLoading: false,
+            data: []
+        }
+    },
+    components: {
+        'header-common': headerCommon
+    },
+    created () {
+        this.getData()
+        this.loadMore()
+    },
+    methods: {
+        loadMore () {
+            var that = this
+            var oldy, cury
+            window.addEventListener('scroll', function (event) {
+                oldy = cury
+                var scrollTop = document.body.scrollTop
+                cury = scrollTop
+                var clientHeight
+                if (!that.$refs.slideBar) {
+                    return
+                }
+                clientHeight = that.$refs.slideBar.clientHeight
+                if (oldy >= cury) {
+                    return
+                }
+                if (scrollTop + window.innerHeight >= clientHeight) {
+                    that.getData(that.page)
+                }
+            })
+        },
+        getData () {
+            if (this.isLoading) {
+                return
+            }
+            if (this.isNo) {
+                return
+            }
+            this.isLoading = true
+            ajax.ajax({
+                'vue': this,
+                'port': 'BalanceRecords',
+                'type': 'get',
+                'params_url': '?dto.balanceChangeTypeId=0&dto.page='+this.page+'&dto.pageSize=10',
+                'statusOk': function (res, v) {
+                    v.page ++
+                    v.isLoading = false
+                    if (res.data.data.length <= 0) {
+                        // window.$.PageDialog.ok('没有更多')
+                        v.isNo = true
+                        return
+                    }
+                    var dat = res.data.data
+                    for (var i = 0; i < dat.length; i++) {
+                        var date = new Date(dat[i].createOn)
+                        var month = parseInt(date.getMonth()) + 1
+                        var hours = date.getHours() > 8? date.getHours() - 8: 24 + date.getHours() -8
+                        var minutes = date.getMinutes()
+                        var seconds = date.getSeconds() >= 10?date.getSeconds():'0'+date.getSeconds()
+                        dat[i].createOn = date.getFullYear() + '-' + month + '-' + date.getDate() + ' ' + hours +':'+ minutes +':'+ seconds
+                    }
+                    v.data = v.data.concat(res.data.data)
+                    console.log(v.data)
+                 },
+                'statusError': function (res, v) {
+                    window.$.PageDialog.ok(res.data.errorMessage)
+                }
+            })
+        }
+    },
+    beforeCreate () {
+        this.$store.commit('hideFoot')
+    }
+}
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus">
+#balanceDetail
+    .balanceDetailWrap
+        padding-top:45px
+        .listWrap
+            border-bottom:1px solid #ddd
+            background-color:#fff
+            .list
+                padding-left:12px
+                padding-bottom:5px
+                border-bottom:1px solid #ddd
+                position:relative
+                color:#666
+                &:last-child
+                    border:none
+                .tt
+                    font-size:18px
+                    line-height:28px
+                    margin-top:5px
+                .time
+                    font-size:15px
+                    color:#999
+                .money
+                    margin-right:10px
+                    position:absolute
+                    right:10px
+                    top:0
+                    line-height:44px
+                    font-family:"微软雅黑"
+                .add
+                    color:#c7a770
+</style>

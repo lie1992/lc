@@ -1,0 +1,248 @@
+<template lang="html">
+    <!-- 常见问题 -->
+    <div id="issure">
+        <header-common :title="viewTitle" :iconType="iconType" :rightParams="rightParams"></header-common>
+        <div id="issureWrap">
+            <div class="tip">您的车子有什么问题？</div>
+            <div class="slide" ref="slideBar">
+                <div class="slideBar">
+                    <div class="list" v-for="it in listData">
+                        <span class="iconfont"  :class="{'icon-chevron-copy-copy-copy':!it.show,'icon-chevron-copy-copy-copy-copy-copy':it.show}" @click="onToggles(it)"></span>
+                        <span class="content" @click="onToggles(it)">{{it.question}}</span>
+                        <div class="line"></div>
+                        <p class="issureContent" v-if="it.show" >{{it.answer}}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="call">
+                <a @click="call(kf_phone)"><span class="iconfont icon-dianhua" ></span>{{kf_phone}}</a>
+            </div>
+        </div>
+    </div>
+
+</template>
+
+<script>
+import Bscroll from 'better-scroll'
+import headerCommon from '../../components/header/headerCommon.vue'
+import ajax from './../../vueResource.ajax.js'
+import { Toast } from 'mint-ui'
+
+export default {
+    data () {
+        return {
+            viewTitle: '常见问题',
+            iconType: 'icon-fanhui',
+            rightParams: {},
+            issureList: [],
+            isLoading: false,
+            page: 1,
+            // 没有数据了
+            isNo: false,
+            // 客服电话
+            kf_phone: ''
+        }
+    },
+    components: {
+        'header-common': headerCommon
+    },
+    computed: {
+        count () {
+            return this.$store.state.count
+        },
+        listData () {
+            return this.issureList
+        }
+    },
+    created () {
+        this.getList()
+        this.loadMore()
+        this.getKF_phone()
+    },
+    beforeCreate () {
+        window.scroll(0,0)
+        this.$store.commit('hideFoot')
+    },
+    methods: {
+        // 获取客服电话
+        getKF_phone () {
+          ajax.ajax({
+               'vue': this,
+               'port': 'GetTelephone',
+               'type': 'get',
+               'statusOk': function (res, v) {
+                   v.kf_phone = res.data.data.telePhone
+               },
+               'statusError': function (res, v) {
+               }
+           })
+         },
+        call (num) {
+            window.location.href = 'tel:' + num
+        },
+        onToggles (val) {
+            // if (val.show) {
+            //     val.show = false
+            // } else {
+            //     val.show = true
+            // }
+            for (var i = 0; i < this.issureList.length; i++) {
+                if (this.issureList[i].show) {
+                    this.issureList[i].show = false
+                    // console.log(this.issureList[i].show)
+                    continue
+                }
+                if (this.issureList[i].questionAndAnswerId === val.questionAndAnswerId) {
+                    this.issureList[i].show = !this.issureList[i].show
+                    // console.log(this.issureList[i].show)
+                    // break
+                }
+            }
+            console.log(this.listData)
+        },
+        loadMore () {
+            var that = this
+            var oldy, cury
+            window.addEventListener('scroll', function (event) {
+                oldy = cury
+                var scrollTop = document.body.scrollTop
+                cury = scrollTop
+                var clientHeight
+                if (!that.$refs.slideBar) {
+                    return
+                }
+                clientHeight = that.$refs.slideBar.clientHeight
+                if (oldy >= cury) {
+                    return
+                }
+                if (scrollTop + window.innerHeight >= clientHeight) {
+                    that.getList(that.page)
+                }
+            })
+        },
+        getList () {
+            if (this.isLoading) {
+                return
+            }
+            if (this.isNo) {
+                return
+            }
+            this.isLoading = true
+            var params = '?dto.page=' + this.page + '&dto.pageSize=10'
+            ajax.ajax({
+                'vue': this,
+                'port': 'GetQuestionAndAnswers',
+                'type': 'get',
+                'params_url': params,
+                'statusOk': function (res, v) {
+                    console.log(res.data)
+                    v.isLoading = false
+                    if (res.data.data.length <= 0) {
+                        // window.$.PageDialog.ok('没有更多')
+                        v.isNo = true
+                        return
+                    }
+                    // Toast('加载成功')
+                    // v.issureList = v.issureList.concat(res.data.data)
+                    var tmp = v.issureList.concat(res.data.data)
+                    for (var i = 0; i < tmp.length; i++) {
+                        if (tmp[i]['show'] !== true) {
+                            tmp[i]['show'] = false
+                        }
+                    }
+                    v.issureList = tmp
+                    v.page ++
+                },
+                'statusError': function (res, v) {
+                }
+            })
+        }
+    }
+}
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus">
+#issure
+    margin-bottom:100px
+    #issureWrap
+        margin-top:45px
+        .tip
+            height:45px
+            line-height:45px
+            padding-left:10px
+            position:fixed
+            z-index:1
+            top:45px
+            left:0
+            width:100%
+            background-color:#f5f5f5
+        .slide
+            width:100%
+            padding-top:45px
+            /*position:absolute
+            top:90px
+            bottom:70px*/
+            /*overflow:hidden*/
+            .slideBar
+                .list
+                    display:block
+                    background-color:#fff
+                    padding-left:10px
+                    padding-right:25px
+                    /*height:44px*/
+                    line-height:44px
+                    border-bottom:1px solid #ddd
+                    color:#333
+                    position:relative
+                    margin-bottom:10px
+                    /*overflow:hidden*/
+                    .iconfont
+                        position:absolute
+                        color:#999
+                        right:8px
+                    .content
+                        display:block
+                        height:44px
+                        width:100%
+                        white-space:nowrap
+                        overflow:hidden
+                        text-overflow:ellipsis
+                    .line
+                        height:1px
+                        background-color:#ddd
+                        position:absolute
+                        top:44px
+                        left:0
+                        width:100%
+                    .issureContent
+                        display:block
+                        line-height:20px
+                        padding-bottom:15px
+                        padding-top:15px
+                        text-indent:2rem
+                        word-break:break-all
+                        word-wrap:break-word
+                    .show
+                        display:block
+        .call
+            position:fixed
+            bottom:0
+            height:44px
+            line-height:44px
+            width:100%
+            padding:10px 3% 10px 3%
+            text-align:center
+            background-color:#fff
+            a
+                background-color:#dab96e
+                display:block
+                width:94%
+                color:#fff
+                font-size:18px
+                font-family:'微软雅黑'
+                span
+                    font-size:20px
+                    padding-right:10px
+
+
+</style>

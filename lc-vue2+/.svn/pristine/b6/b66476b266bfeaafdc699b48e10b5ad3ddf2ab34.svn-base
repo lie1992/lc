@@ -1,0 +1,42 @@
+import Vue from 'vue'
+import App from './App'
+
+import VueRouter from 'vue-router'
+Vue.use(VueRouter)
+
+import vueResource from 'vue-resource'
+Vue.use(vueResource)
+
+import Vuex from 'vuex'
+Vue.use(Vuex)
+
+Vue.config.debug = true
+
+import router from './router'
+
+/* 路由参数 routes  千万别写错 */
+const route = new VueRouter({
+    routes: router.routes
+})
+
+const store = new Vuex.Store({
+    state: {
+        count: 0
+    },
+    mutations: {
+        showFoot (state) {
+            state.count = 0
+            console.log('footer显示')
+        },
+        hideFoot (state) {
+            state.count = 1
+            console.log('footer隐藏')
+        }
+    }
+})
+
+new Vue({
+    store: store,
+    router: route,
+    render: h => h(App)
+}).$mount('#app')

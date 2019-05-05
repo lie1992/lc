@@ -1,0 +1,86 @@
+<template lang="html">
+    <!-- 意见反馈-->
+    <div id="idea">
+        <header-common :title="viewTitle" :iconType="iconType" :rightParams="rightParams"></header-common>
+        <div class="ideaWrap">
+            <textarea class="ideaInner" placeholder="请写下您遇到的问题或建议" v-model="ideaData"></textarea>
+        </div>
+        <button class="sub" @click="onSubmit">提交</button>
+    </div>
+
+</template>
+
+<script>
+import headerCommon from '../../components/header/headerCommon.vue'
+import ajax from './../../vueResource.ajax.js'
+import { Toast } from 'mint-ui'
+
+export default {
+    data () {
+        return {
+            viewTitle: '意见反馈',
+            iconType: 'icon-fanhui',
+            rightParams: {},
+            ideaData: ''
+        }
+    },
+    components: {
+        'header-common': headerCommon
+    },
+    beforeCreate () {
+        this.$store.commit('hideFoot')
+    },
+    methods: {
+        onSubmit () {
+            if (!this.ideaData) {
+                Toast('反馈内容不能为空')
+            }
+            ajax.ajax({
+                'vue': this,
+                'port': 'Feedback',
+                'type': 'post',
+                'req_params': { content: this.ideaData },
+                'statusOk': function (res, v) {
+                    Toast('提交成功，感谢您对尚门理车的支持，祝您生活愉快。')
+                    v.$router.back()
+                },
+                'statusError': function (res, v) {
+                    Toast('提交失败')
+                }
+            })
+        }
+    }
+    // beforeDestroy () {
+    //     this.$store.commit('showFoot')
+    // }
+}
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus">
+#idea
+    .ideaWrap
+        margin-top:60px
+        border:1px solid #ddd
+        border-left:none
+        border-right:none
+        background-color:#fff
+        .ideaInner
+            display:block
+            width:96%
+            height:190px
+            margin:8px 2%
+            border:none
+            font-size:16px
+            resize:none
+    .sub
+        display:block
+        width:96%
+        height:45px
+        color:#fff
+        background-color:#dab96e
+        border:none
+        margin:25px 2%
+        font-size:16px
+        letter-spacing: 3px;
+
+</style>

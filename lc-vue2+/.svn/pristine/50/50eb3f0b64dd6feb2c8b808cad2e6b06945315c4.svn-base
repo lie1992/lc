@@ -1,0 +1,122 @@
+<template lang="html">
+    <!-- 常见问题 -->
+    <div id="issure">
+        <header-common :title="viewTitle" :iconType="iconType" :rightParams="rightParams"></header-common>
+        <div id="issureWrap">
+            <div class="tip">您的车子有什么问题？</div>
+            <div class="slide" ref="scrollBar">
+                <div class="slideBar">
+                    <router-link to=""><span class="iconfont icon-chevron-copy-copy-copy-copy-copy-copy"></span>汽车仪表指示灯点亮</router-link>
+                    <router-link to=""><span class="iconfont icon-chevron-copy-copy-copy-copy-copy-copy"></span>汽车仪表指示灯点亮</router-link>
+                    <router-link to=""><span class="iconfont icon-chevron-copy-copy-copy-copy-copy-copy"></span>汽车仪表指示灯点亮</router-link>
+                    <router-link to=""><span class="iconfont icon-chevron-copy-copy-copy-copy-copy-copy"></span>汽车仪表指示灯点亮</router-link>
+                    <router-link to=""><span class="iconfont icon-chevron-copy-copy-copy-copy-copy-copy"></span>汽车仪表指示灯点亮</router-link>
+                    <router-link to=""><span class="iconfont icon-chevron-copy-copy-copy-copy-copy-copy"></span>汽车仪表指示灯点亮</router-link>
+                    <router-link to=""><span class="iconfont icon-chevron-copy-copy-copy-copy-copy-copy"></span>汽车仪表指示灯点亮</router-link>
+                    <router-link to=""><span class="iconfont icon-chevron-copy-copy-copy-copy-copy-copy"></span>汽车仪表指示灯点亮</router-link>
+                    <router-link to=""><span class="iconfont icon-chevron-copy-copy-copy-copy-copy-copy"></span>汽车仪表指示灯点亮</router-link>
+                    <router-link to=""><span class="iconfont icon-chevron-copy-copy-copy-copy-copy-copy"></span>汽车仪表指示灯点亮</router-link>
+                    <router-link to=""><span class="iconfont icon-chevron-copy-copy-copy-copy-copy-copy"></span>汽车仪表指示灯点亮</router-link>
+                    <router-link to=""><span class="iconfont icon-chevron-copy-copy-copy-copy-copy-copy"></span>汽车仪表指示灯点亮</router-link>
+                    <router-link to=""><span class="iconfont icon-chevron-copy-copy-copy-copy-copy-copy"></span>汽车仪表指示灯点亮</router-link>
+                    <router-link to=""><span class="iconfont icon-chevron-copy-copy-copy-copy-copy-copy"></span>汽车仪表指示灯点亮</router-link>
+                    <router-link to=""><span class="iconfont icon-chevron-copy-copy-copy-copy-copy-copy"></span>汽车仪表指示灯点亮</router-link>
+                    <router-link to=""><span class="iconfont icon-chevron-copy-copy-copy-copy-copy-copy"></span>汽车仪表指示灯点亮</router-link>
+                </div>
+            </div>
+            <div class="call">
+                <a><span class="iconfont icon-dianhua"></span>400-8899-688</a>
+            </div>
+        </div>
+    </div>
+
+</template>
+
+<script>
+import Bscroll from 'better-scroll'
+import headerCommon from '../../components/header/headerCommon.vue'
+export default {
+    data () {
+        return {
+            viewTitle: '常见问题',
+            iconType: 'icon-fanhui',
+            rightParams: {}
+        }
+    },
+    components: {
+        'header-common': headerCommon
+    },
+    computed: {
+        count () {
+            return this.$store.state.count
+        }
+    },
+    created () {
+        this.$nextTick(function () {
+            this._initScroll()
+        })
+    },
+    beforeCreate () {
+        this.$store.commit('hideFoot')
+    },
+    methods: {
+        _initScroll () {
+            this.viewScroll = new Bscroll(this.$refs.scrollBar, {
+                click: true,
+                scrollY: true
+            })
+        }
+    }
+}
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus">
+#issure
+    margin-bottom:60px
+    #issureWrap
+        margin-top:45px
+        .tip
+            height:45px
+            line-height:45px
+            padding-left:10px
+        .slide
+            width:100%
+            position:absolute
+            top:90px
+            bottom:70px
+            overflow:hidden
+            .slideBar
+                a
+                    display:block
+                    background-color:#fff
+                    padding-left:10px
+                    padding-right:25px
+                    height:44px
+                    line-height:44px
+                    border-bottom:1px solid #ddd
+                    color:#333
+                    position:relative
+                    margin-bottom:10px
+                    span
+                        position:absolute
+                        color:#999
+                        right:8px
+        .call
+            position:fixed
+            bottom:0
+            height:44px
+            line-height:44px
+            width:94%
+            margin:0 3% 10px 3%
+            text-align:center
+            background-color:#dab96e
+            a
+                color:#fff
+                font-size:18px
+                font-family:'微软雅黑'
+                span
+                    font-size:20px
+                    padding-right:10px
+
+
+</style>

@@ -1,0 +1,89 @@
+const WEB_PATH = 'http://10.9.254.19:10082'
+// const WEB_PATH = 'http://10.9.254.106:10082'
+// const WEB_PATH2 = 'http://10.9.254.19:10082'
+
+const port = {
+    // 注册 获取短信验证码
+    'regCode': WEB_PATH + '/api/Customer/SendRegisterCode',
+    // 注册 提交
+    'regSubmit': WEB_PATH + '/api/Customer/Register',
+    // 登录
+    'Authenticate': WEB_PATH + '/api/Customer/Authenticate',
+    // 登录 获取图形验证码
+    'LoginCode': WEB_PATH + '/api/Customer/LoginCode',
+    // 登录 验证是否需要验证码
+    'NeededCode': WEB_PATH + '/api/Customer/NeededCode',
+    // 忘记密码 获取短信验证码
+    'findCode': WEB_PATH + '/api/Customer/SendForgetCode',
+    // 忘记密码 提交
+    'findSubmit': WEB_PATH + '/api/Customer/ForgetPassword',
+    // 首页 轮播图
+    'AppHomeAdvers': WEB_PATH + '/api/Adver/AppHomeAdvers',
+    // 首页 广告位图片
+    'AppAdverSpace1Advers': WEB_PATH + '/api/Adver/AppAdverSpace1Advers',
+    // 首页 获取默认车辆
+    'GetDefaultCustomerCar': WEB_PATH + '/api/CustomerCar/GetDefaultCustomerCar',
+    // 服务 门店列表
+    'GetStores': WEB_PATH + '/api/Store/GetStores',
+    // 我的 主页
+    'MyInfo': WEB_PATH + '/api/Customer/MyInfo',
+    // 我的 地址列表
+    'MyAddresses': WEB_PATH + '/api/Customer/MyAddresses',
+    // 我的 添加地址
+    'AddAddress': WEB_PATH + '/api/Customer/AddAddress',
+    // 我的 删除地址
+    'DeleteAddress': WEB_PATH + '/api/Customer/DeleteAddress',
+    // 我的 设置默认地址
+    'SetDefaultAddress': WEB_PATH + '/api/Customer/SetDefaultAddress',
+    // 我的 余额明细
+    'BalanceRecords': WEB_PATH + '/api/CustomerInfo/BalanceRecords',
+    // 我的 优惠券
+    'GetCurrentCoupons': WEB_PATH + '/api/CustomerInfo/GetCurrentCoupons',
+    // 我的 修改密码
+    'UpdatePassword': WEB_PATH + '/api/Customer/UpdatePassword',
+    // 我的 设置用户名
+    'SetRealName': WEB_PATH + '/api/Customer/SetRealName',
+    // 我的 设置生日
+    'SetBirthday': WEB_PATH + '/api/Customer/SetBirthday',
+    // 我的 设置性别
+    'SetGender': WEB_PATH + '/api/Customer/SetGender',
+    // 我的 设置头像
+    'UpdateAvatar': WEB_PATH + '/api/Customer/UpdateAvatar',
+    // 地址 获取省级数据
+    'GetAllRegionsWithoutTown': WEB_PATH + '/api/SystemInfo/GetAllRegionsWithoutTown',
+    // 地址 根据父级地址获取区域
+    'GetRegionsByParentId': WEB_PATH + '/api/SystemInfo/GetRegionsByParentId',
+    // 车辆 添加车辆
+    'CreateCustomerCar': WEB_PATH + '/api/CustomerCar/CreateCustomerCar',
+    // 车辆 获取车辆列表
+    'GetCustomerCars': WEB_PATH + '/api/CustomerCar/GetCustomerCars',
+    // 车辆 设置默认车辆
+    'SetDefaultCustomerCar': WEB_PATH + '/api/CustomerCar/SetDefaultCustomerCar',
+    // 车辆 删除车辆
+    'DelCustomerCar': WEB_PATH + '/api/CustomerCar/DelCustomerCar',
+    // 获取车辆详情
+    'GetCustomerCarDetail': WEB_PATH + '/api/CustomerCar/GetCustomerCarDetail',
+    // 车辆 获取品牌
+    'GetBrands': WEB_PATH + '/api/Car/GetBrands',
+    // 车辆 获取品牌车系和系列
+    'GetBrandSeriesAndSeries': WEB_PATH + '/api/Car/GetBrandSeriesAndSeries',
+    // 车辆 获取指定车款详情
+    'GetCarDetailByCarId': WEB_PATH + '/api/Car/GetCarDetailByCarId',
+    // 根据系列，选择车款
+    'GetCarsBySeriesId': WEB_PATH + '/api/Car/GetCarsBySeriesId',
+    // 上传图片 返回图片ID
+    'PictureUpload': WEB_PATH + '/api/Picture/PictureUpload',
+    // 上传 返回图片id和预览
+    'PictureUploadForView': WEB_PATH + '/api/Picture/PictureUploadForView',
+    // 其他 意见反馈
+    'Feedback': WEB_PATH + '/api/SystemInfo/Feedback',
+    // 其他 车险报名
+    'CreateInsuranceApplication': WEB_PATH + '/api/Others/CreateInsuranceApplication',
+    // 其他 获取保险公司信息（名称）
+    'GetAllInsuranceCompanies': WEB_PATH + '/api/Others/GetAllInsuranceCompanies',
+    // 其他 常见问题
+    'GetQuestionAndAnswers': WEB_PATH + '/api/Others/GetQuestionAndAnswers'
+}
+export default {
+    port
+}

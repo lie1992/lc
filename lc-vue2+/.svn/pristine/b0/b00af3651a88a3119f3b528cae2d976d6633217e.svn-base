@@ -1,0 +1,39 @@
+<template lang="html">
+    <div id="orderConfirm" >
+        <header-common :title="viewTitle" :iconType="iconType" :rightParams="rightParams"></header-common>
+        <div class="orderConfirmWrap">
+
+        </div>
+    </div>
+</template>
+
+<script  type="text/ecmascript-6">
+import headerCommon from 'components/header/headerCommon.vue'
+
+export default {
+    data () {
+        return {
+            viewTitle: '确认订单',
+            iconType: 'icon-fanhui',
+            rightParams: {}
+        }
+    },
+    components: {
+        'header-common': headerCommon
+    },
+    created () {
+    },
+    methods: {
+    },
+    beforeCreate () {
+        this.$store.commit('showFoot')
+    }
+}
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus">
+#orderConfirm
+    .orderConfirmWrap
+        padding-top:45px
+
+</style>

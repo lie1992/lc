@@ -1,0 +1,101 @@
+<template lang="html">
+    <div id="cartAccessories" >
+        <!-- 更换配件 -->
+        <header-common :title="viewTitle" :iconType="iconType" :rightParams="rightParams"></header-common>
+        <div class="cartAccessoriesWrap">
+            <div class="content">
+                <div class="item">
+                    <p class="select iconfont icon-xuanze"></p>
+                    <p class="ttl">
+                        <span class="desc">嘉实多极护(4L)</span>
+                    </p>
+                    <p class="change numBar">
+                        <span class="add iconfont icon-15jiajianjia"></span>
+                        <span class="init"><input type="text" value></span>
+                        <span class="reduce iconfont icon-16jiajianjian"></span>
+                    </p>
+                </div>
+                <div class="item">
+                    <p class="select iconfont icon-xuanze sel"></p>
+                    <p class="ttl">
+                        <span class="desc">嘉实多极护(4L)</span>
+                    </p>
+                    <p class="change numBar">
+                        <span class="add iconfont icon-15jiajianjia"></span>
+                        <span class="init"><input type="text" value></span>
+                        <span class="reduce iconfont icon-16jiajianjian"></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script  type="text/ecmascript-6">
+import Bscroll from 'better-scroll'
+import headerCommon from 'components/header/headerCommon.vue'
+
+export default {
+    data () {
+        return {
+            viewTitle: '更换配件',
+            iconType: 'icon-fanhui',
+            rightParams: {
+                path: '/cart',
+                desc: '完成'
+            }
+        }
+    },
+    components: {
+        'header-common': headerCommon
+    },
+    created () {
+    },
+    methods: {
+    },
+    beforeCreate () {
+        this.$store.commit('showFoot')
+    }
+}
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus">
+@import '../assets/css/cssCommon.styl'
+#cartAccessories
+    .cartAccessoriesWrap
+        padding-top:45px
+        .content
+            background-color:#fff
+            border-bottom:1px solid #ddd
+            .item
+                overflow:hidden
+                height:50px
+                margin-left:12px
+                padding-right:12px
+                border-bottom:1px solid #ddd
+                &:last-child
+                    border:none
+                .ttl
+                    float:left
+                    width:50%
+                    height:100%
+                    display:table
+                    span
+                        display:table-cell
+                        vertical-align:middle
+                .change
+                    float:right
+                    margin-top:10px
+                .select
+                    width:30px
+                    float:left
+                    height:50px
+                    line-height:50px
+                    font-size:24px
+                    color:#999
+                .sel
+                    &:before
+                        color:#c7a770
+
+
+</style>

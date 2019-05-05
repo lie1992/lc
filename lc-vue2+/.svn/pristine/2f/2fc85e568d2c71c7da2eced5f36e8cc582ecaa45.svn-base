@@ -1,0 +1,279 @@
+bg-pos($x, $y)
+    background-position: $x $y
+bg-img($url)
+    background-image: url($url+".png")
+.write-space-50
+    height:55px
+    background:#eee
+.show-img
+    width: 100%
+    overflow:hidden
+    .swiper-slide
+        img
+            display: block
+            width:100%
+            overflow:hidden
+.index-wrap
+    .curCarInfo
+        width:94%
+        height:90px
+        background-color:#fff
+        border-radius:8px
+        box-shadow: 0 0 2px 2px #d4d4d4;
+        position:relative
+        top:-18px
+        left:3%
+        z-index:10
+        overflow:hidden
+        .CarInfoWrap
+            padding-left:70px
+            overflow:hidden
+            .carLogo
+                position:absolute
+                top:15px
+                left:0
+                width:40px
+                height:40px
+                padding:10px
+                float:left
+                img
+                    margin:0 auto
+                    max-width:100%
+            .carInfo
+                float:left
+                width:100%
+                font-family:"微软雅黑"
+                position:relative
+                &:before
+                    width:30px
+                    height:90px
+                    position:absolute
+                    right:0
+                    text-align:center
+                    line-height:90px
+                    color:#999
+                .carID
+                    margin:15px 0
+                    width:105px
+                    height:32px
+                    bg-img("../assets/images/bg_carID")
+                    background-size: 100% 100%
+                    font-family:"微软雅黑"
+                    font-size:15px
+                    letter-spacing: 1px
+                    color:#fff
+                    text-align:center
+                    line-height:32px
+                .carDesc
+                    font-family:"微软雅黑"
+                    color:#999
+                    font-size:14px
+                    letter-spacing: 1px
+                    overflow:hidden
+                    white-space:nowrap
+                    text-overflow:ellipsis
+                    padding-right:30px
+
+
+
+    .nav-wrap
+        background-color:#fff
+        padding: 5px 0 10px 0;
+        border-bottom:1px solid #ddd
+        overflow: hidden
+        a
+            display:block
+            width:20%
+            float:left
+            text-align:center
+            font-size:14px
+            color:#333
+            &:before
+                content: ''
+                display:block
+                width:52px
+                height:52px
+                margin: 5px auto
+                bg-img("../assets/images/nav")
+                background-size:330px 130px
+
+            &:first-child
+                &:before
+                    bg-pos(0,0)
+            &:nth-child(2)
+                &:before
+                    bg-pos(-69px,0)
+            &:nth-child(3)
+                &:before
+                    bg-pos(-140px,0)
+            &:nth-child(4)
+                &:before
+                    bg-pos(-209px,0)
+            &:nth-child(5)
+                &:before
+                    bg-pos(-278px,0)
+            &:nth-child(6)
+                &:before
+                    bg-pos(0,-78px)
+            &:nth-child(7)
+                &:before
+                    bg-pos(-69px,-78px)
+            &:nth-child(8)
+                &:before
+                    bg-pos(-140px,-78px)
+            &:nth-child(9)
+                &:before
+                    bg-pos(-210px,-78px)
+            &:nth-child(10)
+                &:before
+                    bg-pos(-278px,-78px)
+
+    .write-space
+        height:15px
+        background-color:#eee
+    .commonWrap
+        background-color:#fff
+        padding:0 0 10px 10px
+        position:relative
+        .md-title
+            height:45px
+            color:#333
+            line-height:45px
+            position:relative
+            font-size:18px
+            border-bottom:1px solid #ddd
+            .title-right
+                position:absolute
+                padding-right:5px
+                top:0
+                right:0
+                color:#999
+                font-size:14px
+                label
+                    color:#333
+                span
+                    display:inline-block
+                    width:16px
+                    height:17px
+                    bg-img("../assets/images/icon_xiugai")
+                    background-size: 100% 100%
+                    vertical-align:middle
+        .plan-wrap
+            ul
+                overflow:hidden
+                li
+                    display:block
+                    float:left
+                    font-size:13px
+                    text-align:center
+                    color:#000
+                    line-height:14px
+                    img
+                        width:80%
+                        margin:10%
+        .plan-btn-wrap
+            overflow:hidden
+            margin-top:30px
+            div
+                width:47%
+                height:40px
+                line-height:40px
+                text-align:center
+                float:left
+            .check
+                border:1px solid #c7a770
+                color:#c7a770
+                margin-right:2%
+            .cart-in
+                border:1px solid #c7a770
+                background-color:#c7a770
+                color:#fff
+
+    .violation
+        .commonContent
+            p
+                color:#000
+                line-height:36px
+                font-size:15px
+            .wz-search
+                height:40px
+                width:97%
+                margin:0 3% 0 0
+                input
+                    width:73%
+                    padding: 0 1%
+                    float:left
+                    height:40px
+                    border:none
+                    background:#eee
+                    outline:medium
+                button
+                    width:25%
+                    height:40px
+                    border:none
+                    float:left
+                    outline:medium
+                    background:#c7a770
+                    color:#fff
+                    font-size:20px
+    .recommend
+        border-bottom:1px solid #ddd
+        padding-bottom:0
+        .art-list
+            position:relative
+            padding:10px 0 10px 120px
+            height:85px
+            border-bottom:1px solid #ddd
+            &:last-child
+                border:none
+            img
+                position:absolute
+                left:0
+                top:10px
+                width:115px
+                height:85px
+            .tt
+                line-height:22px
+                font-size:18px
+                margin-bottom:10px
+                white-space:nowrap
+                overflow:hidden
+                text-overflow:ellipsis
+            .desc
+                color:#999
+                font-size:14px
+                overflow:hidden
+                height:53px
+                line-height:18px
+    .insurance
+        padding-bottom:0
+        .commonContent
+            line-height:50px
+            .mint-switch
+                float:right
+                margin:8px
+                .mint-switch-core
+                    border-color:#c7a770
+                    background-color:#c7a770
+
+
+
+
+
+
+
+
+
+
+@media screen and (min-width: 376px)
+    .plan-wrap
+        ul
+            li
+                width 18%
+                padding: 0 1%
+
+@media screen and (max-width: 375px)
+    .plan-wrap
+        ul
+            li
+                width 25%

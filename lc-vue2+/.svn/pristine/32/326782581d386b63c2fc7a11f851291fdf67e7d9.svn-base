@@ -1,0 +1,140 @@
+<template lang="html">
+    <div class="carlist">
+        <header-common :title="viewTitle" :iconType="iconType" :rightParams="rightParams"></header-common>
+        <div class="carWrap">
+            <div class="CarInfo">
+                <div class="CarInfoWrap">
+                    <div class="carLogo">
+                        <img src="../../assets/images/test_carlogo.png" >
+                    </div>
+                    <div class="carInfo">
+                        <div class="carID">浙·C88888</div>
+                        <div class="carDesc">2016款 奥迪A4L 自动 舒适型 典藏版</div>
+                    </div>
+                </div>
+                <div class="operate">
+                    <div class="default sel"><span class="iconfont icon-xuanze"></span>默认车辆<em></em></div>
+                    <div class="read"><span class="iconfont icon-wenzhang44"></span>保养手册<em></em></div>
+                    <div class="delate"><span class="iconfont icon-shanchu"></span>删除</div>
+                </div>
+            </div>
+
+            <div class="CarInfo">
+                <div class="CarInfoWrap">
+                    <div class="carLogo">
+                        <img src="../../assets/images/test_carlogo.png" >
+                    </div>
+                    <div class="carInfo">
+                        <div class="carID">浙·C88888</div>
+                        <div class="carDesc">2016款 奥迪A4L 自动 舒适型 典藏版</div>
+                    </div>
+                </div>
+                <div class="operate">
+                    <div class="default sel"><span class="iconfont icon-xuanze"></span>默认车辆<em></em></div>
+                    <div class="read"><span class="iconfont icon-wenzhang44"></span>保养手册<em></em></div>
+                    <div class="delate"><span class="iconfont icon-shanchu"></span>删除</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+import headerCommon from 'components/header/headerCommon.vue'
+export default {
+    data () {
+        return {
+            viewTitle: '我的车辆',
+            iconType: 'icon-fanhui',
+            rightParams: {}
+        }
+    },
+    components: {
+        'header-common': headerCommon
+    },
+    methods: {
+    },
+    created () {
+    }
+}
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus">
+bg-img($url)
+    background-image: url($url+".png")
+.carlist
+    .carWrap
+        margin-top:45px
+        .CarInfo
+            width:100%
+            background-color:#fff
+            position:relative
+            border-bottom:1px solid #ddd
+            margin-bottom:10px
+            .CarInfoWrap
+                padding-left:70px
+                overflow:hidden
+                .carLogo
+                    position:absolute
+                    top:15px
+                    left:0
+                    width:40px
+                    height:40px
+                    padding:10px
+                    float:left
+                    img
+                        margin:0 auto
+                        max-width:100%
+                .carInfo
+                    float:left
+                    width:100%
+                    font-family:"微软雅黑"
+                    position:relative
+                    .carID
+                        margin:15px 0
+                        width:105px
+                        height:32px
+                        bg-img("../../assets/images/bg_carID")
+                        background-size: 100% 100%
+                        font-family:"微软雅黑"
+                        font-size:15px
+                        letter-spacing: 1px
+                        color:#fff
+                        text-align:center
+                        line-height:32px
+                    .carDesc
+                        font-family:"微软雅黑"
+                        color:#999
+                        font-size:14px
+                        letter-spacing: 1px
+                        overflow:hidden
+                        white-space:nowrap
+                        text-overflow:ellipsis
+                        padding-right:30px
+            .operate
+                height:40px
+                margin-top:15px
+                margin-left:10px
+                border-top:1px solid #ddd
+                display:flex
+                div
+                    flex:1
+                    height:40px
+                    line-height:40px
+                    text-align:center
+                    position:relative
+                    span
+                        margin-right:3px
+                    em
+                        display:block
+                        width:1px
+                        height:24px
+                        position:absolute
+                        right:0
+                        top:8px
+                        background-color:#ddd
+                .sel
+                    span
+                        color:#dab96e
+
+</style>

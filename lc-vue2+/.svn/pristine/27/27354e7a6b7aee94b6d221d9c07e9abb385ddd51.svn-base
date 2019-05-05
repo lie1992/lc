@@ -1,0 +1,32 @@
+<template lang="html">
+    <!-- 我的地址 -->
+    <div id="address">
+        <header-common :title="viewTitle" :iconType="iconType" :rightParams="rightParams"></header-common>
+    </div>
+
+</template>
+
+<script>
+import headerCommon from '../../components/header/headerCommon.vue'
+export default {
+    data () {
+        return {
+            viewTitle: '我的地址',
+            iconType: 'icon-fanhui',
+            rightParams: {}
+        }
+    },
+    components: {
+        'header-common': headerCommon
+    },
+    beforeCreate () {
+        this.$store.commit('hideFoot')
+    },
+    beforeDestroy () {
+        this.$store.commit('showFoot')
+    }
+}
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus">
+</style>

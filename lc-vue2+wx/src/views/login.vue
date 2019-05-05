@@ -1,0 +1,327 @@
+<template lang="html">
+    <div class="login">
+        <header-common :title="viewTitle" :iconType="iconType" :rightParams="rightParams"></header-common>
+        <div class="registerWrap">
+            <form action="" class="regFrom">
+                <!-- <div><input type="text" name="mobile" autocomplete="off" placeholder="我的手机号" v-model="userName" @blur="onCheckCode"/></div> -->
+                <div><input type="text" name="mobile" autocomplete="off" placeholder="我的手机号" v-model="userName" @blur="onCheckCode"/></div>
+                <div><input type="password" name="password" placeholder="我的密码" v-model="password" /></div>
+                <div v-if="hasCode">
+                    <input type="text" name="code" placeholder="验证码" v-model="code" />
+                    <img :src="codeImg" @click="onChangeCode" />
+                </div>
+                <div class="bt"></div>
+                <input type="button" value="登录" class="sub" @click="onLogin">
+                <div class="loginOperate">
+                    <p class="left" @click="saveAccount">
+                        <span class="iconfont icon-xuanze" :class="{ sel: isSaveAccount }"></span>记住账号
+                    </p>
+                    <p class="right" @click="savePassword">
+                        <span class="iconfont icon-xuanze" :class="{ sel: isSavePassword }"></span>记住密码
+                    </p>
+                </div>
+                <div>
+                    <router-link to="/findPassword">忘记密码</router-link>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+
+</template>
+
+<script>
+import Vue from 'vue'
+import headerCommon from 'components/header/headerCommon.vue'
+import { Toast, Indicator } from 'mint-ui'
+import ports from './../port.js'
+
+export default {
+    data () {
+        return {
+            viewTitle: '登录',
+            iconType: 'icon-guanbi',
+            rightParams: {
+                path: '/register',
+                desc: '注册'
+            },
+            userName: '',
+            password: '',
+            code: '',
+            // 是否需要验证码
+            hasCode: false,
+            // 图形验证码
+            codeImg: '',
+            isSavePassword: false,
+            isSaveAccount: false
+        }
+    },
+    components: {
+        'header-common': headerCommon
+    },
+    beforeCreate () {
+        this.$store.commit('hideFoot')
+    },
+    beforeDestroy () {
+        window.scroll(0,0)
+        Indicator.close()
+    },
+    created () {
+        if (window.localStorage.userToken) {
+            this.$router.push('/index')
+        }else {
+            window.localStorage.clear()
+            this.$store.state.user.userToken = ''
+            this.$store.state.user.userName = ''
+            this.$store.state.user.userDefaultCar = {}
+            this.$store.state.user.curCarData = {}
+            // this.$store.state.user.curAreaID = ''
+            this.$store.state.user.curCarNum = ''
+            this.$store.state.user.userCarList = []
+            this.$store.state.user.userInfo = {}
+            this.$store.state.user.curCarID = ''
+        }
+
+        var coodieUserName = this.getCookie('loginUserName')
+        var coodiePassword = this.getCookie('loginPassword')
+        if (coodieUserName) {
+            this.userName = coodieUserName
+        }
+        if (coodiePassword) {
+            this.password = coodiePassword
+        }
+    },
+    methods: {
+        saveAccount () {
+            this.isSaveAccount = !this.isSaveAccount
+        },
+        savePassword () {
+            this.isSavePassword = !this.isSavePassword
+        },
+        onLogin () {
+            if (!this.userName) {
+                window.$.PageDialog.ok('请填写手机号码')
+                return false
+            }
+            if (!this.password) {
+                window.$.PageDialog.ok('请填写密码')
+                return false
+            }
+            var params = {
+                'username': this.userName,
+                'password': this.password,
+                'code': this.code
+            }
+            Indicator.open()
+            this.$http.post(ports.port.Authenticate, params).then((res) => {
+                if (res.data.success === true) {
+                    if (res.data.data.loginSuccess === false) {
+                        // 登录失败
+                        window.$.PageDialog.ok(res.data.data.error)
+                        Indicator.close()
+                        if (res.data.data.requiredCode === true) {
+                            this.hasCode = true
+                            this.getCode()
+                        }
+                    } else {
+                        // 成功返回 保存token
+                        if (this.isSavePassword) {
+                            this.setCookie('loginPassword', this.password)
+                        } else {
+                            this.delCookie('loginPassword')
+                        }
+                        if (this.isSaveAccount) {
+                            this.setCookie('loginUserName', this.userName)
+                        } else {
+                            this.delCookie('loginUserName')
+                        }
+                        window.localStorage.userToken = res.data.data.token
+                        window.localStorage.userName = this.userName
+                        this.$store.state.userToken = res.data.data.token
+                        this.$store.state.userName = this.userName
+                        // this.$http.options.root = '/root'
+                        // this.$http.headers.common['Authorization'] = 'Bearer ' + res.data.data.token
+                        // this.$http.headers.custom['Authorization'] = 'Bearer ' + res.data.data.token
+                        Vue.http.options.root = '/root'
+                        Vue.http.headers.common['Authorization'] = 'Bearer ' + res.data.data.token
+                        Indicator.close()
+                        this.$router.push('/index')
+                    }
+                } else {
+                    Indicator.close()
+                    window.$.PageDialog.ok(res.data.errorMessage)
+                    if (this.hasCode) {
+                        this.getCode()
+                    }
+                }
+            }, (res) => {
+            })
+        },
+        onChangeCode () {
+            // 更换验证码
+            this.getCode()
+        },
+        onCheckCode () {
+            // 验证是否需要验证码
+            this.verifyNeededCode()
+        },
+        verifyNeededCode () {
+            this.$http.post(ports.port.NeededCode + '?username=' + this.userName).then((res) => {
+                if (res.data.success === true) {
+                    this.hasCode = res.data.data
+                }
+            }, (res) => {
+            })
+        },
+        getCode () {
+            // 获取验证码
+            this.$http.get(ports.port.LoginCode + '?username=' + this.userName).then((res) => {
+                if (res.data.success === true) {
+                    this.codeImg = res.data.data
+                    this.isCodeDisabled = true
+                }
+            }, (res) => {
+            })
+        },
+        setCookie (name, value) {
+            var Days = 30;
+            var exp = new Date();
+            exp.setTime(exp.getTime() + Days * 24 * 60 * 60 * 1000);
+            document.cookie = name + "=" + escape(value) + ";expires=" + exp.toGMTString();
+        },
+        getCookie (name) {
+            var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
+            if (arr = document.cookie.match(reg))
+                return unescape(arr[2]);
+            else
+                return null;
+        },
+        delCookie (name) {
+            var exp = new Date();
+            exp.setTime(exp.getTime() - 1);
+            var cval = this.getCookie(name);
+            if (cval != null)
+                document.cookie = name + "=" + cval + ";expires=" + exp.toGMTString();
+        }
+    },
+    watch: {
+        hasCode () {
+            if (this.hasCode) {
+                this.getCode()
+            }
+        }
+    }
+}
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus">
+.login
+    .registerWrap
+        margin-top:55px
+        border-top:1px solid #ccc
+        .regFrom
+            /*background-color:#fff*/
+            width:100%
+            div
+                height:45px
+                line-height:45px
+                margin-left:45px
+                border-top:1px solid #ccc
+                position:relative
+                &:before
+                    content:''
+                    display:block
+                    position:absolute
+                    left:-45px
+                    top:0px
+                    width:45px
+                    height:45px
+                    background-image:url(../assets/images/icon_account.png)
+                    background-repeat:no-repeat
+                    background-size:19px 213px
+                    background-color:#fff
+                &:first-child
+                    border-top:none
+                    &:before
+                        background-position:13px -34px
+                        border-bottom:1px solid #fff
+                &:nth-child(2)
+                    &:before
+                        background-position:13px -179px
+                &:nth-child(3)
+                    input
+                        width:60%
+                    img
+                        display:inline-block
+                        width:70px
+                        height:30px
+                        vertical-align:middle
+                        border:none
+                    &:before
+                        background-position:13px -82px
+                &:last-child
+                    border-top:none
+                    text-align:center
+                    margin:0
+                .getCode
+                    height:25px
+                    width:90px
+                    line-height:25px
+                    color:#fff
+                    background-color:#c7a770
+                    float:right
+                    margin-top:10px
+                    margin-right:20px
+                .checkBox
+                    display:inline-block
+                    width:18px
+                    height:18px
+                    border:1px solid #bbb
+                    line-height:19px
+                    margin:0
+                .checked
+                    color:#c7a770
+                input
+                    height:45px
+                    width:100%
+                .code
+                    width:60%
+                .router-link-active
+                    color:#c7a770
+            .bt
+                height:1px
+                border-top:1px solid #ccc
+                margin:0
+            .sub
+                width:94%
+                height:45px
+                background-color:#c7a770
+                color:#fff
+                display:block
+                margin:15px auto
+        .loginOperate
+            margin-left:0!important
+            border-top:none!important
+            position:initial
+            overflow:hidden
+            &:before
+                display:none!important
+            p
+                width: 45%
+                float:left
+                &:first-child
+                    margin-left:5%
+                &:last-child
+                    text-align:right
+                span
+                    font-size:24px
+                    vertical-align: middle
+                    margin-right:5px
+                    color:#c3c3c3
+                .sel
+                    color:#dab96e
+
+
+
+</style>

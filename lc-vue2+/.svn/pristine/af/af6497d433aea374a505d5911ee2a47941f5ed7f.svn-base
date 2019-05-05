@@ -1,0 +1,331 @@
+<template lang="html">
+    <div id="cartCompile" >
+        <!-- 购物车编辑 -->
+        <header-common :title="viewTitle" :iconType="iconType" :rightParams="rightParams" v-on:updataCart="updataCartRel"></header-common>
+        <div class="cartCompileWrap">
+            <div class="content" v-for="item in relCartData.serviceShoppingCartItems">
+                <div class="tt"><i class="iconfont icon-xuanze" :class="{ sel: item.sel}" @click="serveSelect(item)"></i>{{item.serviceProductName}}</div>
+                <div class="item" v-for="itemchild in item.accessoryCategories">
+                    <p class="ttl">
+                        <span class="name">{{itemchild.accessoryCategoryName}}</span>
+                    </p>
+                    <div class="pj" v-for="pj in itemchild.accessoryShoppingCartItems">
+                        <span class="desc">{{pj.accessoryProductName}}</span>
+                        <p class="change numBar">
+                            <span class="add iconfont icon-15jiajianjia" @click="plus(pj)"></span>
+                            <span class="init"><input type="text" v-model="pj.quantity" @keyup="input(pj)"></span>
+                            <span class="reduce iconfont icon-16jiajianjian" @click="reduce(pj)"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="totalWrap">
+            <div class="left">
+                <span class="iconfont icon-xuanze" :class="{ sel: checkAll}" @click="checkALLfun"></span>全选
+            </div>
+            <div class="right">
+                <div class="buy" @click="onDel">删除</div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script  type="text/ecmascript-6">
+import Bscroll from 'better-scroll'
+import headerCommon from 'components/header/headerCommon.vue'
+import ajax from './../vueResource.ajax.js'
+import { Toast } from 'mint-ui'
+
+export default {
+    data () {
+        return {
+            viewTitle: '购物车',
+            iconType: '',
+            rightParams: {
+                path: '/cart',
+                desc: '完成',
+                emit: 'updataCart'
+            },
+            // 购物车数据
+            relCartData: {},
+            checkAll: false
+        }
+    },
+    components: {
+        'header-common': headerCommon
+    },
+    created () {
+        if (this.$store.state.user.userDefaultCar.id) {
+            this.getCartData()
+        } else {
+            this.getDefaultCarInfo()
+        }
+    },
+    computed: {
+        cartData () {
+            return this.$store.state.cart.cartData
+        },
+        defaultCar () {
+            return this.$store.state.user.userDefaultCar
+        }
+    },
+    watch: {
+        cartData () {
+            // console.log(this.cartData)
+            this.relCartData = this.cartData
+        }
+    },
+    methods: {
+        checkALLfun () {
+            this.checkAll = !this.checkAll
+            // cartData
+            console.log(this.cartData)
+            var dat = this.cartData.serviceShoppingCartItems
+            for (var i = 0; i < dat.length; i++) {
+                dat[i].sel = this.checkAll
+            }
+        },
+        plus (val) {
+            val.quantity ++
+            this.updataCartRel(val.quantity, val.accessoryShoppingCartItemId)
+            console.log(val)
+        },
+        reduce (val) {
+            if (val.quantity <= 1) {
+                return
+            }
+            val.quantity --
+            this.updataCartRel(val.quantity, val.accessoryShoppingCartItemId)
+        },
+        input (val) {
+            val.quantity = val.quantity.replace(/[^0-9]/g,'')
+            if (!val.quantity) {
+                val.quantity = 0
+            } else {
+                val.quantity = parseInt(val.quantity)
+            }
+
+            this.updataCartRel(val.quantity, val.accessoryShoppingCartItemId)
+        },
+        updataCartRel (num, aid) {
+            console.log(this.cartData.serviceShoppingCartItems)
+            var dat = this.cartData.serviceShoppingCartItems
+            var params = {
+                'customerCarId': this.defaultCar.id,
+                'accessoryProductShoppingCartItemId': aid,
+                'quantity': num
+            }
+            ajax.ajax({
+                'vue': this,
+                'port': 'UpdateAccessoryProductCartItem',
+                'type': 'post',
+                'req_params': params,
+                'statusOk': function (res, v) {
+                },
+                'statusError': function (res, v) {
+                    Toast(res.data.errorMessage)
+                }
+            })
+        },
+        onDel () {
+            var delArr = []
+            var dat = this.cartData.serviceShoppingCartItems
+            for (var i = 0; i < dat.length; i++) {
+                if (dat[i].sel === true) {
+                    delArr.push(dat[i].serviceShoppingCartItemId)
+                }
+            }
+            var params = {
+                customerCarId: this.defaultCar.id,
+                serviceProductShoppingCartItemIds: delArr
+            }
+            // console.log(params)
+            ajax.ajax({
+                'vue': this,
+                'port': 'RemoveServiceProductCartItems',
+                'type': 'post',
+                'req_params': params,
+                'statusOk': function (res, v) {
+                    console.log(res.data.data)
+                    Toast('删除成功')
+                    v.getCartData()
+                },
+                'statusError': function (res, v) {
+                    Toast('删除失败')
+                }
+            })
+        },
+        serveSelect (val) {
+            var dat = this.cartData.serviceShoppingCartItems
+            for (var i = 0; i < dat.length; i++) {
+                if (dat[i].serviceShoppingCartItemId === val.serviceShoppingCartItemId) {
+                    dat[i].sel = !val.sel
+                     this.cartData = dat
+                    console.log(this.cartData.serviceShoppingCartItems)
+                    return
+                }
+            }
+        },
+         // 获取购物车数据
+        getCartData () {
+            ajax.ajax({
+                'vue': this,
+                'port': 'GetShoppingCart',
+                'type': 'get',
+                'params_url': '?customerCarId=' + this.defaultCar.id,
+                'statusOk': function (res, v) {
+                    // console.log(res.data.data)
+                    var dat = res.data.data.serviceShoppingCartItems
+                    for (var i = 0; i < dat.length; i++) {
+                        dat[i].sel = false
+                    }
+                    v.$store.state.cart.cartData = res.data.data
+                },
+                'statusError': function (res, v) {
+                    Toast('获取购物车列表失败')
+                }
+            })
+        },
+        getDefaultCarInfo () {
+            if (!this.$store.state.user.curCarNum) {
+                ajax.ajax({
+                    'vue': this,
+                    'port': 'GetDefaultCustomerCar',
+                    'type': 'get',
+                    'statusOk': function (res, v) {
+                        v.$store.state.user.userDefaultCar = res.data.data
+                        v.$store.state.user.curCarNum = v.$store.state.user.userDefaultCar.displayLicensePlate
+                        v.getCartData()
+                    },
+                    'statusError': function (res, v) {
+                        Toast('获取用户信息失败')
+                    }
+                })
+            } else {
+                var listData = this.$store.state.user.userCarList
+                var curCarID = this.$store.state.user.curCarData.id
+                for (var i = 0; i < listData.length; i++) {
+                    if (listData[i].id === curCarID) {
+                        this.$store.state.user.userDefaultCar = listData[i]
+                        v.getCartData()
+                    }
+                }
+            }
+        }
+    },
+    beforeCreate () {
+        this.$store.commit('showFoot')
+    }
+}
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus">
+@import '../assets/css/cssCommon.styl'
+#cartCompile
+    .cartCompileWrap
+        padding-top:45px
+        padding-bottom:110px
+        .content
+            margin-top:10px
+            background-color:#fff
+            border-bottom:1px solid #ddd
+            .tt
+                line-height:50px
+                padding-left:12px
+                color:#666
+                border-bottom:1px solid #ddd
+                font-size:18px
+                margin-bottom:-1px
+                i
+                    margin-right:5px
+                    display:inline-block
+                    padding:0
+                    &:before
+                        color:#999
+                        font-size:24px
+                        vertical-align:middle
+                .sel
+                    &:before
+                        color:#c7a770
+            .item
+                margin-left:42px
+                overflow:hidden
+                border-bottom:1px solid #ddd
+                &:last-child
+                    border:none
+                p
+                    line-height:58px
+                    /*float:left*/
+                .ttl
+                    width:100%
+                    display:block
+                    span
+                        display:block
+                        white-space:nowrap
+                        overflow:hidden
+                        text-overflow:ellipsis
+                        overflow:hidden
+                        &:first-child
+                            margin-top:2px
+                            line-height:30px
+                            height:30px
+                        /*&:last-child
+                            line-height:20px
+                            color:#999
+                            height:20px
+                            font-size:14px*/
+                .pj
+                    width:100%
+                    display:block
+                    height:36px
+                    line-height:36px
+                    .desc
+                        font-size:14px
+                        color:#666
+                .change
+                    float:right
+                    color:#c7a770
+                    overflow:hidden
+                    margin:0 10px 0 0
+                    .init
+                        background-color:#fff
+                        input
+                            background:none
+    .totalWrap
+        position:fixed
+        width:100%
+        height:50px
+        bottom:50px
+        left:0
+        background-color:#f5f5f5
+        border-top:1px solid #ddd
+        .left
+            float:left
+            line-height:50px
+            padding-left:12px
+            color:#333
+            span
+                font-size:24px
+                vertical-align:middle
+                color:#999
+                margin-right:5px
+            .sel
+                color:#c7a770
+        .right
+            height:50px
+            float:right
+            position:relative
+            padding-right:107px
+            .buy
+                position:absolute
+                top:7px
+                right:12px
+                display:inline-block
+                width:90px
+                height:36px
+                line-height:36px
+                text-align:center
+                background-color:#c7a770
+                color:#fff
+</style>

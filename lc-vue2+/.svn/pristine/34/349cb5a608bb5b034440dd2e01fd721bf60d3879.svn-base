@@ -1,0 +1,258 @@
+<template lang="html">
+    <div class="register">
+        <header-common :title="viewTitle" :iconType="iconType" :rightParams="rightParams" ></header-common>
+        <div class="registerWrap">
+            <form action="" class="regFrom">
+                <div><input type="text" name="userName" v-model="userName" placeholder="我的姓名" /></div>
+                <div><input type="text" name="mobile" v-model="mobile" placeholder="我的手机号" /></div>
+                <div><input type="text" name="code" v-model="code" class="code" placeholder="短信验证码" /><input type="button" name="btn" class="getCode" :class="{ disabled:isCodeDisabled }" :value="codeCount === 0? '获取验证码': codeCount + 's'" :disabled="isCodeDisabled"  @click="onGetCode"></div>
+                <div><input type="password" name="password" v-model="password" placeholder="我的密码" /></div>
+                <div><input type="password" name="repassword" v-model="repassword" placeholder="再次输入密码" /></div>
+                <input type="hidden" name="checked" value="true"  />
+                <div class="bt"></div>
+                <input type="button" value="注册" class="sub" @click="onSubmit">
+                <div class="xy" style="background-color:#f5f5f5">
+                    <span class="checkBox iconfont icon-duigou"  v-bind:class="{ checked: agreementCheck }" @click="onAgreementCheck"></span>
+                    <!-- <router-link to="/agreement">《尚门理车服务协议》</router-link> -->
+                    <a @click="agreementToggle = true">《尚门理车服务协议》</a>
+                </div>
+            </form>
+        </div>
+        <agreement v-if="agreementToggle" v-on:closeXYInParent="closeXYInParentRel"></agreement>
+
+    </div>
+</template>
+
+<script>
+import headerCommon from 'components/header/headerCommon.vue'
+import agreement from './../views/agreement.vue'
+import { Toast, Indicator } from 'mint-ui'
+import ports from './../port.js'
+
+export default {
+    data () {
+        return {
+            viewTitle: '注册',
+            iconType: 'icon-fanhui',
+            rightParams: {
+                path: '/login',
+                desc: '登录'
+            },
+            userName: '',
+            mobile: '',
+            code: '',
+            codeKey: '',
+            password: '',
+            repassword: '',
+            // 服务协议
+            agreementCheck: false,
+            // 验证码倒计时
+            codeCount: 0,
+            isCodeDisabled: false,
+            // 协议隐显
+            agreementToggle: false
+        }
+    },
+    components: {
+        'header-common': headerCommon,
+        'agreement': agreement
+    },
+    methods: {
+        closeXYInParentRel () {
+            this.agreementToggle = false
+        },
+        onAgreementCheck () {
+            if (this.agreementCheck === true) {
+                this.agreementCheck = false
+            } else {
+                this.agreementCheck = true
+            }
+        },
+        onGetCode () {
+            var reg = /^1[34578]\d{9}$/
+            if (!reg.test(this.mobile)) {
+                window.$.PageDialog.ok('手机号码填写错误')
+                return false
+            }
+            var params = {
+                'mobile': this.mobile
+            }
+            this.$http.post(ports.port.regCode, params).then((res) => {
+                if (res.data.success === true) {
+                    this.codeKey = res.data.data
+                    this.codeCount = 60
+                    this.isCodeDisabled = true
+                    this.onTimeRoll()
+                    window.$.PageDialog.ok('手机验证码已发送')
+                } else {
+                    window.$.PageDialog.ok(res.data.errorMessage)
+                }
+            }, (res) => {
+            })
+        },
+        onSubmit () {
+            var share = this.$route.query.shareCode
+            if (!this.userName) {
+                window.$.PageDialog.ok('请填写姓名')
+                return false
+            }
+            var reg = /^1[34578]\d{9}$/
+            if (!reg.test(this.mobile)) {
+                window.$.PageDialog.ok('手机号码填写错误')
+                return false
+            }
+            if (!this.code) {
+                window.$.PageDialog.ok('请填写验证码')
+                return false
+            }
+            var reg2 = /[A-Za-z0-9\._\-]{6,25}/
+            if (!reg2.test(this.password)) {
+                window.$.PageDialog.ok('密码不能小于6位，且只能使用数字和字母以及"."和"_"')
+                return false
+            }
+            if (this.repassword !== this.password) {
+                window.$.PageDialog.ok('两次输入密码不相同')
+                return false
+            }
+            if (!this.agreementCheck) {
+                window.$.PageDialog.ok('请先阅读服务协议')
+                return false
+            }
+            var params = {
+                'realName': this.userName,
+                'mobile': this.mobile,
+                'password': this.password,
+                'shareGuid': '',
+                'codeKey': this.codeKey,
+                'code': this.code
+            }
+            if (share) {
+                params.shareCode = share
+            }
+            var that = this
+            Indicator.open()
+            this.$http.post(ports.port.regSubmit, params).then((res) => {
+                Indicator.close()
+                if (res.data.success === true) {
+                    window.$.PageDialog.ok('注册成功')
+                    setTimeout(function () {
+                        that.$router.push('/login')
+                    }, 2500)
+                } else {
+                    window.$.PageDialog.ok(res.data.errorMessage)
+                }
+            }, (res) => {
+            })
+        },
+        onTimeRoll () {
+            var that = this
+            var timeRoll = setInterval(function () {
+                if (that.codeCount > 0) {
+                    that.codeCount --
+                } else {
+                    clearInterval(timeRoll)
+                    timeRoll = null
+                    that.isCodeDisabled = false
+                }
+            }, 1000)
+        }
+    },
+    created () {
+    },
+    beforeCreate () {
+        window.scroll(0,0)
+        this.$store.commit('hideFoot')
+    }
+}
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus">
+.register
+    .registerWrap
+        margin-top:55px
+        border-top:1px solid #ccc
+        .regFrom
+            /*background-color:#fff*/
+            width:100%
+            div
+                height:45px
+                line-height:45px
+                margin-left:45px
+                border-top:1px solid #ccc
+                position:relative
+                background-color:#fff
+                &:before
+                    content:''
+                    display:block
+                    position:absolute
+                    left:-45px
+                    top:0px
+                    width:45px
+                    height:45px
+                    background-image:url(../assets/images/icon_account.png)
+                    background-repeat:no-repeat
+                    background-size:19px 213px
+                    border-bottom:1px solid #fff
+                    background-color:#fff
+                &:first-child
+                    border-top:none
+                    &:before
+                        background-position:13px 13px
+                &:nth-child(2)
+                    &:before
+                        background-position:13px -34px
+                &:nth-child(3)
+                    &:before
+                        background-position:13px -82px
+                &:nth-child(4)
+                    &:before
+                        background-position:13px -130px
+                &:nth-child(5)
+                    &:before
+                        background-position:13px -179px
+                &:last-child
+                    border-top:none
+                    text-align:center
+                    margin:0
+                    border-bottom:none
+                .getCode
+                    height:25px
+                    width:90px
+                    line-height:25px
+                    color:#fff
+                    background-color:#c7a770
+                    float:right
+                    margin-top:10px
+                    margin-right:20px
+                    font-size:13px
+                .disabled
+                    background-color:#b9b9b9
+                .checkBox
+                    display:inline-block
+                    width:18px
+                    height:18px
+                    border:1px solid #bbb
+                    line-height:19px
+                    margin:0
+                    color:#f5f5f5
+                .checked
+                    color:#c7a770
+                input
+                    height:45px
+                    width:100%
+                .code
+                    width:60%
+            .bt
+                height:1px
+                border-top:1px solid #ccc
+                margin:0
+            .sub
+                width:94%
+                height:45px
+                background-color:#c7a770
+                color:#fff
+                display:block
+                margin:15px auto
+
+
+</style>

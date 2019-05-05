@@ -1,0 +1,65 @@
+const comm = {
+    state: {
+        count: 0,
+        // 上传车辆行驶证示意图开关
+        carFloor: false,
+        curCarNum: '浙C88888',
+        // 是否打开选车组件
+        hasCarSelectSHow: false,
+        hasCarSelectParternSHow: false,
+        // 当前正在添加的车辆ID
+        addCarID: ''
+    },
+    mutations: {
+        showFoot (state) {
+            state.count = 0
+            console.log('footer显示')
+        },
+        hideFoot (state) {
+            state.count = 1
+            console.log('footer隐藏')
+        },
+        showCarFloor (state) {
+            state.carFloor = true
+        },
+        hidecarFloor (state) {
+            state.carFloor = false
+            console.log(1)
+        },
+        hideCarSelect (state) {
+            state.hasCarSelectSHow = false
+        },
+        hideCarSelectPartern (state) {
+            state.hasCarSelectParternSHow = false
+        },
+        changeCurCarNum (state) {
+            // state.curCarNum
+        }
+    }
+}
+
+const user = {
+    state: {
+        userName: '',
+        userToken: '',
+        userInfo: {},
+        // 用户默认车辆
+        userDefaultCar: {}
+    },
+    mutations: {
+        logout (state) {
+        },
+        setUserInfo (state, userData) {
+            state.userInfo = userData
+        }
+    }
+}
+
+const data = {
+    'comm': comm,
+    'user': user
+}
+
+export default {
+    data
+}

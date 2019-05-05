@@ -1,0 +1,198 @@
+<template lang="html">
+    <!--  个人资料  -->
+    <div id="information">
+        <header-common :title="viewTitle" :iconType="iconType" :rightParams="rightParams"></header-common>
+        <div class="informationWrap">
+            <div class="head">
+                <div class="headWrap">
+                    <img src="../../assets/images/header_default.png" />
+                    <p>更换头像</p>
+                </div>
+            </div>
+            <div class="info">
+                <div class="iconfont icon-chevron-copy-copy-copy-copy-copy-copy"><label>姓名</label><input type="text" placeholder="请填写"></div>
+                <div class="iconfont icon-chevron-copy-copy-copy-copy-copy-copy"><label>手机号</label><input type="text" placeholder="请填写" value="13488888888"></div>
+                <div class="iconfont icon-chevron-copy-copy-copy-copy-copy-copy"><label>性别</label> <input type="text" :value="sex" readonly @click="hasSexPicker = 0" ></div>
+                <div class="iconfont icon-chevron-copy-copy-copy-copy-copy-copy"><label>生日</label><input type="text" :value="birthDate" readonly @click="openPicker"></div>
+                <div class="iconfont icon-chevron-copy-copy-copy-copy-copy-copy"><label>会员等级</label><input type="text" value="一星会员" readonly=""></div>
+            </div>
+            <div class="code">
+                <img src="../../assets/images/test1.png" class="codeibj" />
+                我的专属二维码
+            </div>
+            <div class="sex-picker" v-if="hasSexPicker == 0">
+                <div class="mask"></div>
+                <div class="pickWrap">
+                    <div class="opwrap">
+                        <span @click="onsexPicker(1)">取消</span>
+                        <span @click="onsexPicker(0)">确定</span>
+                    </div>
+                    <mt-picker :slots="slots" :visibleItemCount="visibleItemCount" @change="onPickerChange"></mt-picker>
+                </div>
+            </div>
+            <mt-datetime-picker ref="picker" type="date" :startDate="startDate" @confirm="closePicker" @cancel="closePicker" > </mt-datetime-picker>
+        </div>
+    </div>
+
+</template>
+
+<script>
+import headerCommon from '../../components/header/headerCommon.vue'
+import 'mint-ui/lib/style.min.css'
+import { DatetimePicker, Picker } from 'mint-ui'
+
+export default {
+    data () {
+        return {
+            viewTitle: '个人资料',
+            iconType: 'icon-fanhui',
+            rightParams: {},
+            sex: '男',
+            birthDate: '',
+            visibleItemCount: 3,
+            slots: [{
+                flex: 1,
+                values: ['男', '女', '保密'],
+                textAlign: 'center'
+
+            }],
+            hasSexPicker: 1,
+            startDate: new Date('1970-01-01 00:00:00')
+        }
+    },
+    components: {
+        'header-common': headerCommon,
+        'mt-datetime-picker': DatetimePicker,
+        'mt-picker': Picker
+    },
+    beforeCreate () {
+        this.$store.commit('hideFoot')
+    },
+    methods: {
+        onPickerChange (picker, val) {
+            this.sex = val[0]
+        },
+        onsexPicker (val) {
+            // 0确定 1取消
+            this.hasSexPicker = 1
+            if (val === 0) {
+            }
+        },
+        openPicker () {
+            this.$refs.picker.open()
+        },
+        closePicker (val) {
+            console.log(val)
+            this.$refs.picker.close()
+            var date = new Date(val)
+            this.birthDate = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate()
+        }
+    }
+    // beforeDestroy () {
+    //     this.$store.commit('showFoot')
+    // }
+}
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus">
+#information
+    .informationWrap
+        margin-top:45px
+        .head
+            height:100px
+            background-color:#fff
+            padding-top:20px
+            border-bottom:1px solid #ddd
+            .headWrap
+                width:80px
+                height:80px
+                position:relative
+                left:50%
+                margin-left:-40px
+                border-radius:100%
+                -webkit-mask-image: url(../../assets/images/header_default.png)
+                -webkit-mask-size:100% 100%
+                img
+                    width:80px
+                    height:80px
+                    /*border-radius:100%*/
+                    display:block
+                p
+                    position:absolute
+                    bottom:0
+                    text-align:center
+                    background-color:rgba(0,0,0,0.5)
+                    color:#fff
+                    width:100%
+                    height:30px
+                    line-height:25px
+                    font-size:12px
+
+        .info
+            margin-top:15px
+            width:100%
+            background-color:#fff
+            border-bottom:1px solid #ddd
+            div
+                height:45px
+                line-height:45px
+                margin-left:10px
+                border-bottom:1px solid #ddd
+                position:relative
+                &:last-child
+                    border-bottom:none
+                &:before
+                    position:absolute
+                    right:10px
+                    color:#999
+                label
+                    display:inline-block
+                    width:33%
+                    color:#999
+                input
+                    display:inline-block
+                    width:60%
+                    height:44px
+        .code
+            height: 250px
+            width: 100%
+            color: #666
+            text-align: center
+            line-height: 50px
+            background-color: #fff
+            padding-top: 30px
+            img
+                display: block
+                height: 190px
+                width: 190px
+                margin: 0 auto
+    .sex-picker
+        width:100%
+        height:100%
+        position:fixed
+        bottom:0
+        .mask
+            position:absolute
+            height:100%
+            width:100%
+            background-color:rgba(0,0,0,0.5)
+        .pickWrap
+            position:absolute
+            bottom:0
+            width:100%
+            z-index:2
+            background-color:#fff
+            .opwrap
+                overflow:hidden
+                border-bottom:1px solid #ddd
+                span
+                    display:block
+                    float:left
+                    width:50%
+                    color:#26a2ff
+                    height:40px
+                    line-height:40px
+                    text-align:center
+
+
+</style>

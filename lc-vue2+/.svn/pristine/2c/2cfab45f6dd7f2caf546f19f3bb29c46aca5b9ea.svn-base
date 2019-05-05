@@ -1,0 +1,7 @@
+img
+    width:100%
+    height:100%
+.mint-swipe-indicators
+    .is-active
+        background:#fff
+        opacity:1

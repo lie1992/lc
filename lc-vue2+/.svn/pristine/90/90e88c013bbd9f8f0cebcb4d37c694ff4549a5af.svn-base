@@ -1,0 +1,409 @@
+<template lang="html">
+    <!-- 新增地址 -->
+    <div id="editAddress">
+        <header-common :title="viewTitle" :iconType="iconType" :rightParams="rightParams"></header-common>
+        <div id="addressWrap">
+            <div class="info">
+                <form class="addAddressForm ">
+                    <div class=""><label>收货人</label><input type="text" placeholder="请填写" v-model="name"></div>
+                    <div class=""><label>手机号</label><input type="text" placeholder="请填写" value="" v-model="mobile"></div>
+                    <div class="iconfont icon-chevron-copy-copy-copy-copy-copy-copy" @click="onAddSel"><label>所在城市</label><input type="text" readonly name="" placeholder="请选择" :value="areaStr"></div>
+                    <div class="addressDetail"><label>详细地址</label><input type="text" placeholder="请填写" v-model="streetDetail"></div>
+                </form>
+                <div class="defaultSel"><span class="iconfont icon-xuanze" :class="{ 'sel': isDefault }" @click="onDefault"></span><label>设为默认地址</label></div>
+            </div>
+            <div class="btnWrap">
+                <button class="charge" @click="onSubmit">保存</button>
+            </div>
+        </div>
+        <div class="selAddWrap" v-if="isShowAddSel">
+            <div class="selHeader">
+                <a class="iconfont" :class="iconType" @click="onBackUp"></a>
+                <div class="title">选择地址</div>
+            </div>
+            <div class="scrollBar"  ref="addScroll">
+                <ul>
+                    <li class="addNode" v-for="add in areaList"  :sid="add.id" :pid="add.parentId" @click="onNext(add.id, add.name, add.parentId, add.regionLevelId)" >{{add.name}}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</template>
+
+<script>
+import headerCommon from '../../components/header/headerCommon.vue'
+import Bscroll from 'better-scroll'
+import { Indicator, Toast } from 'mint-ui'
+// import ports from './../../port.js'
+import ajax from './../../vueResource.ajax.js'
+
+export default {
+    data () {
+        return {
+            viewTitle: '新增地址',
+            iconType: 'icon-fanhui',
+            rightParams: {},
+            name: '',
+            mobile: '',
+            province: '',
+            city: '',
+            area: '',
+            street: '',
+            streetDetail: '',
+            // 省市区 字符串
+            areaStr: '',
+            areaTmpStr: '',
+            // 当前区域的父级ID
+            curParentId: '',
+            // 当前点击数
+            curClickNum: 0,
+            isDefault: false,
+            isShowAddSel: false,
+            areaList: [],
+            // 当前步数
+            curStep: 0,
+            // 省市区字符串
+            provinceStr: '',
+            cityStr: '',
+            area2Str: '',
+            // 地址数据
+            oldData: {}
+        }
+    },
+    components: {
+        'header-common': headerCommon
+    },
+    created () {
+        this.getAddressInfo()
+    },
+    beforeCreate () {
+        this.$store.commit('hideFoot')
+    },
+    methods: {
+        getAddressInfo () {
+            var ID = this.$route.query.id
+            ajax.ajax({
+                'vue': this,
+                'port': 'GetCustomerAddress',
+                'type': 'get',
+                'params_url': '?addressId=' + ID,
+                'statusOk': function (res, v) {
+                    v.oldData = res.data.data
+                    v.name = v.oldData.customerName
+                    v.mobile = v.oldData.phoneNumber
+                    v.areaStr = v.oldData.province + ' ' + v.oldData.city + ' ' + v.oldData.county
+                    v.streetDetail = v.oldData.road
+                    v.provinceId = v.oldData.provinceId
+                    v.cityId = v.oldData.cityId
+                    v.countyId = v.oldData.countyId
+                    v.isDefault = v.oldData.isDefault
+                },
+                'statusError': function (res, v) {
+                }
+            })
+        },
+        onDefault () {
+            if (this.isDefault) {
+                this.isDefault = false
+            } else {
+                this.isDefault = true
+            }
+        },
+        onSubmit () {
+            if (!this.name) {
+                Toast('收货人不能为空')
+                return
+            }
+            if (!this.mobile) {
+                Toast('手机号码不能为空')
+                return
+            }
+            if (!this.areaStr) {
+                Toast('请选择地址')
+                return
+            }
+            if (!this.streetDetail) {
+                Toast('请填写您的详细地址')
+                return
+            }
+            var params = {
+                id: this.oldData.id,
+                provinceId: this.oldData.provinceId,
+                cityId: this.oldData.cityId,
+                countyId: this.oldData.countyId,
+                road: this.streetDetail,
+                customerName: this.name,
+                phoneNumber: this.mobile,
+                isDefault: this.isDefault
+            }
+            ajax.ajax({
+                'vue': this,
+                'port': 'UpdateAddress',
+                'req_params': params,
+                'type': 'post',
+                'statusOk': function (res, v) {
+                    Toast('修改地址成功')
+                    setTimeout(function () {
+                        // v.$router.push('/user/address')
+                        v.$router.back()
+                    }, 1500)
+                },
+                'statusError': function (res, v) {
+                    Toast('添加地址失败，请稍后重试')
+                }
+            })
+            // var that = this
+            // this.$http.post(ports.port.AddAddress, params).then((res) => {
+            //     if (res.data.success === true) {
+            //         Toast('添加成功')
+            //         setTimeout(function () {
+            //             that.$router.push('/user/address')
+            //         }, 1500)
+            //     } else {
+            //         Toast('添加地址失败，请稍后重试')
+            //     }
+            // })
+        },
+        _initScroll () {
+            this.viewScroll = new Bscroll(this.$refs.addScroll, {
+                click: true,
+                scrollY: true
+            })
+        },
+        onNext (id, name, pid, grade) {
+            // console.log(id, name, pid, grade)
+            this.curStep = grade
+            // console.log(pid, this.areaTmpStr)
+            // if (!pid) {
+            //     this.curParentId = null
+            //     this.areaTmpStr += name + ' '
+            // } else if (pid === 0) {
+            //     // 返回上一级
+            //     this.curParentId = id
+            //     var arr = this.areaTmpStr.split(' ')
+            //     arr.splice(-1, 1)
+            //     this.areaTmpStr = arr.join(' ')
+            // } else {
+            //     this.curParentId = pid
+            //     this.areaTmpStr += name + ' '
+            // }
+            if (grade === 1) {
+                this.province = id
+                console.log(this.province)
+                this.provinceStr = name
+            } else if (grade === 2) {
+                this.city = id
+                this.cityStr = name
+                console.log(this.city)
+            } else if (grade === 3) {
+                this.area = id
+                this.area2Str = name
+                console.log(this.area)
+            }
+            if (this.provinceStr) {
+                this.areaTmpStr = this.provinceStr
+                if (this.cityStr) {
+                    this.areaTmpStr = this.provinceStr + ' ' + this.cityStr
+                    if (this.area2Str) {
+                        this.areaTmpStr = this.provinceStr + ' ' + this.cityStr + ' ' + this.area2Str
+                    }
+                }
+            }
+            // // console.log(this.province, this.city, this.area)
+            if (grade >= 3) {
+                this.areaStr = this.areaTmpStr
+                this.isShowAddSel = false
+                this.curClickNum = 0
+                return
+            }
+            //
+            // Indicator.open()
+
+            // var that = this
+            // this.$http.get(ports.port.GetRegionsByParentId + '?parentId=' + id).then((res) => {
+            //     if (res.data.success === true) {
+            //         this.areaList = res.data.data
+            //         setTimeout(function () {
+            //             that.viewScroll.refresh()
+            //             Indicator.close()
+            //         }, 300)
+            //     } else {
+            //         Toast('获取地址失败')
+            //     }
+            // })
+            ajax.ajax({
+                'vue': this,
+                'port': 'GetRegionsByParentId',
+                'params_url': '?parentId=' + id,
+                'type': 'get',
+                'statusOk': function (res, v) {
+                    v.areaList = res.data.data
+                    setTimeout(function () {
+                        v.viewScroll.refresh()
+                        Indicator.close()
+                    }, 300)
+                },
+                'statusError': function (res, v) {
+                    Toast('获取地址失败')
+                }
+            })
+        },
+        onBackUp () {
+            console.log(this.curStep)
+            if (this.curStep === 0) {
+                this.curStep = 0
+                this.curParentId = null
+                this.isShowAddSel = false
+                return
+            }
+            this.curStep --
+            // console.log(this.curClickNum)
+            // if (this.curClickNum <= 0) {
+            //     this.curClickNum = 0
+            //     this.curParentId = null
+            //     this.isShowAddSel = false
+            //     return
+            // }
+            // if (this.curClickNum > 0) {
+            //     this.curClickNum --
+            // }
+            // console.log(this.curParentId)
+            if (this.curParentId) {
+                this.onNext(this.curParentId, '', 0)
+            } else {
+                this.onAddSel()
+            }
+        },
+        onAddSel () {
+            // 获取省级区域
+            var that = this
+            // this.areaStr = ''
+            this.areaTmpStr = ''
+            this.isShowAddSel = true
+            ajax.ajax({
+                'vue': this,
+                'port': 'GetAllRegionsWithoutTown',
+                'type': 'get',
+                'statusOk': function (res, v) {
+                    v.areaList = res.data.data.provinces
+                    v.curStep = 0
+                    setTimeout(function () {
+                        v._initScroll()
+                    }, 300)
+                },
+                'statusError': function (res, v) {
+                    Toast('获取地址失败')
+                }
+            })
+        }
+    }
+}
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus">
+#editAddress
+    #addressWrap
+        margin-top:55px
+        margin-bottom:77px
+        .info
+            margin-top:15px
+            width:100%
+            border-bottom:1px solid #ddd
+            .addAddressForm
+                background-color:#fff
+                div
+                    height:45px
+                    line-height:45px
+                    margin-left:10px
+                    border-bottom:1px solid #ddd
+                    position:relative
+                    &:last-child
+                        border-bottom:none
+                    &:before
+                        position:absolute
+                        right:10px
+                        color:#999
+                    label
+                        display:inline-block
+                        width:33%
+                        color:#999
+                    input
+                        display:inline-block
+                        width:60%
+                        height:44px
+                        font-size:14px
+                .addressDetail
+                    margin-left:0
+                    padding-left:10px
+                    input
+                        height:44px
+                        width:63%
+            .defaultSel
+                margin-top:10px
+                background-color:#fff
+                line-height:44px
+                padding-left:10px
+                color:#666
+                span
+                    margin-right:8px
+                    color:#c3c3c3
+                    display:inline-block
+                    height:24px
+                    line-height:24px
+                    &:before
+                        vertical-align:middle
+                        font-size:24px
+                        color:#c3c3c3
+                .sel
+                    &:before
+                        color:#dab96e
+        .btnWrap
+            position:fixed
+            bottom:0
+            width:100%
+            background-color:#fff
+            z-index:1
+            .charge
+                width: 94%
+                margin: 20px 3% 10px 3%
+                background-color: #c7a770
+                height: 44px
+                line-height: 44px
+                color: #fff
+                border: none
+                font-size: 18px
+    .selAddWrap
+        position:absolute
+        width:96%
+        left:0
+        top:0px
+        bottom:0px
+        z-index:99
+        background-color:#fff
+        padding:0 2% 10px 2%
+        .selHeader
+            height:45px
+            line-height:45px
+            a
+                float:left
+            .title
+                text-align:center
+        .scrollBar
+            position:absolute
+            width:96%
+            top:45px
+            bottom:0
+            overflow:hidden
+            ul
+                display:block
+                min-height:100%
+                border-top:1px solid #ddd
+                background-color:#fff
+                li
+                    display:block
+                    line-height:40px
+                    border-bottom:1px solid #ddd
+.mint-indicator-wrapper
+    z-index:100
+</style>

@@ -1,0 +1,40 @@
+import index from './views/index.vue'
+import cart from './views/cart.vue'
+import order from './views/order.vue'
+import user from './views/user.vue'
+import cityView from './views/cityView.vue'
+import message from './views/message.vue'
+import messageDetail from './views/messageDetail.vue'
+
+const routes = [
+    {
+        path: '/index',
+        component: index
+    }, {
+        path: '/',
+        component: index
+    }, {
+        path: '/cart',
+        component: cart
+    }, {
+        path: '/order',
+        component: order
+    }, {
+        path: '/user',
+        component: user
+    }, {
+        name: 'position',
+        path: '/position',
+        component: cityView
+    }, {
+        path: '/message',
+        component: message
+    }, {
+        path: '/message/:id',
+        component: messageDetail
+    }
+]
+
+export default {
+    routes
+}

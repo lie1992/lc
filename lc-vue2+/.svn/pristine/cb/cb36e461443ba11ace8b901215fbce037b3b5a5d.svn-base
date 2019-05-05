@@ -1,0 +1,189 @@
+<template lang="html">
+    <div id="order" >
+        <header-common :title="viewTitle" :iconType="iconType" :rightParams="rightParams"></header-common>
+        <div class="orderWrap">
+            <mt-navbar  v-model="selected">
+                <mt-tab-item id="1">全部</mt-tab-item>
+                <mt-tab-item id="2">待处理</mt-tab-item>
+                <mt-tab-item id="3">已完成</mt-tab-item>
+            </mt-navbar>
+            <mt-tab-container :swipeable="swipeable" v-model="selected">
+                <mt-tab-container-item id="1">
+                    <div class="list">
+                        <div class="slideBar">
+                            <div class="orderItem" @click="$router.push('/order/1')">
+                                <div class="status">订单时间：<span>2016-11-26 12:10:17</span><span class="orderStatus">代付订金</span></div>
+                                <div class="ttl">定期小保养<span>耗时<em>45分钟</em>服务费<em>￥90</em></span></div>
+                                <div class="itemWrap">
+                                    <div class="item">
+                                        <p class="tt"><span class="name">机油</span><span class="desc">嘉实多机油(4L)</span></p>
+                                        <p class="cost">￥414</p>
+                                    </div>
+                                    <div class="item">
+                                        <p class="tt"><span class="name">机油</span><span class="desc">嘉实多机油(4L)</span></p>
+                                        <p class="cost">￥414</p>
+                                    </div>
+                                </div>
+                                <div class="hz">共3个配件、1项服务 实付款：<em>￥594</em></div>
+                                <div class="total">
+                                    应付订金：<em>￥65</em>
+                                    <div class="btnWrap"><button>取消订单</button><button>立即付款</button></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </mt-tab-container-item>
+                <mt-tab-container-item id="2">
+                    <div class="list">
+                        <div class="slideBar">
+
+                        </div>
+                    </div>
+                </mt-tab-container-item>
+                <mt-tab-container-item id="3">
+                    <div class="list">
+                        <div class="slideBar">
+
+                        </div>
+                    </div>
+                </mt-tab-container-item>
+            </mt-tab-container>
+
+        </div>
+    </div>
+</template>
+
+<script  type="text/ecmascript-6">
+import Bscroll from 'better-scroll'
+import headerCommon from 'components/header/headerCommon.vue'
+import { Navbar, TabItem, TabContainer, TabContainerItem } from 'mint-ui'
+
+export default {
+    data () {
+        return {
+            viewTitle: '订单',
+            iconType: '',
+            rightParams: {},
+            swipeable: true,
+            selected: '1'
+        }
+    },
+    components: {
+        'header-common': headerCommon,
+        'mt-navbar': Navbar,
+        'mt-tab-item': TabItem,
+        'mt-tab-container': TabContainer,
+        'mt-tab-container-item': TabContainerItem
+    },
+    created () {
+    },
+    methods: {
+    },
+    beforeCreate () {
+        this.$store.commit('showFoot')
+    }
+}
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus">
+#order
+    .orderWrap
+        padding-top:45px
+        .mint-navbar
+            border-bottom:1px solid #ddd
+            .mint-tab-item-label
+                font-size:16px
+                color:#666
+        .mint-tab-item.is-selected
+            border-color:#c7a770
+            .mint-tab-item-label
+                color:#c7a770
+        .list
+            .slideBar
+                .orderItem
+                    background-color:#fff
+                    margin-top:10px
+                    div
+                        padding-left:10px
+                        border-bottom:1px solid #ddd
+                    .status
+                        line-height:50px
+                        color:#999
+                        font-size:15px
+                        span
+                            color:#c7a770
+                        .orderStatus
+                            float:right
+                            margin-right:10px
+                    .ttl
+                        line-height:50px
+                        font-size:17px
+                        span
+                            float:right
+                            font-size:15px
+                            color:#999
+                            em
+                                font-style:normal
+                                color:#c7a770
+                                margin-right:10px
+                                font-family:'微软雅黑'
+                    .itemWrap
+                        .item
+                            height:60px
+                            margin-left:25px
+                            &:last-child
+                                border:none
+                            .cost
+                                float:right
+                                margin-right:10px
+                                line-height:60px
+                            .tt
+                                float:left
+                                width:75%
+                                span
+                                    display:block
+                                    white-space:nowrap
+                                    overflow:hidden
+                                    text-overflow:ellipsis
+                                .name
+                                    line-height:30px
+                                    margin-top:4px
+                                    font-size:17px
+                                .desc
+                                    font-size:15px
+                                    color:#999
+                    .hz
+                        line-height:50px
+                        text-align:right
+                        padding-right:10px
+                        color:#999
+                        font-size:15px
+                        em
+                            font-style:normal
+                            color:#c7a770
+                            font-family:'微软雅黑'
+                    .total
+                        line-height:50px
+                        .btnWrap
+                            float:right
+                            button
+                                border:1px solid #aaa
+                                background:none
+                                height:32px
+                                width:80px
+                                margin-right:5px
+                                &:last-child
+                                    color:#c7a770
+                                    border-color:#c7a770
+                        em
+                            font-style:normal
+                            color:#c7a770
+                            font-family:'微软雅黑'
+
+
+
+
+
+
+
+</style>
